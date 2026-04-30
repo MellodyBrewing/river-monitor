@@ -612,23 +612,35 @@ function buildSparkline(history, safeThreshold, currentCfs, safetyColor) {
 }
 
 // ── API Fetch ─────────────────────────────────────────────────────────────────
+// Try multiple proxies in order until one works
+async function proxyFetch(targetUrl) {
+  const proxies = [
+    u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+    u => `https://corsproxy.io/?url=${encodeURIComponent(u)}`,
+    u => `https://cors-anywhere.herokuapp.com/${u}`,
+  ];
+  for (const proxy of proxies) {
+    try {
+      const res = await fetch(proxy(targetUrl), { signal: AbortSignal.timeout(8000) });
+      if (res.ok) return res;
+    } catch(e) { /* try next */ }
+  }
+  throw new Error("All proxies failed");
+}
+
 async function fetchGaugeData(siteId) {
   // Fetch real-time current reading
-  const rtUrl = `https://corsproxy.io/?url=${encodeURIComponent(
-    `https://waterservices.usgs.gov/nwis/iv/?format=json&sites=${siteId}&parameterCd=00060,00065&siteStatus=active`
-  )}`;
+  const rtTarget = `https://waterservices.usgs.gov/nwis/iv/?format=json&sites=${siteId}&parameterCd=00060,00065&siteStatus=active`;
 
   // Fetch 14-day daily mean for sparkline (using daily values service)
   const endDate = new Date();
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - 14);
   const fmt = d => d.toISOString().split('T')[0];
-  const histUrl = `https://corsproxy.io/?url=${encodeURIComponent(
-    `https://waterservices.usgs.gov/nwis/dv/?format=json&sites=${siteId}&parameterCd=00060&startDT=${fmt(startDate)}&endDT=${fmt(endDate)}`
-  )}`;
+  const histTarget = `https://waterservices.usgs.gov/nwis/dv/?format=json&sites=${siteId}&parameterCd=00060&startDT=${fmt(startDate)}&endDT=${fmt(endDate)}`;
 
   try {
-    const [rtRes, histRes] = await Promise.all([fetch(rtUrl), fetch(histUrl)]);
+    const [rtRes, histRes] = await Promise.all([proxyFetch(rtTarget), proxyFetch(histTarget)]);
     const rtJson = await rtRes.json();
     const histJson = await histRes.json();
 
