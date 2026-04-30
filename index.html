@@ -206,7 +206,7 @@
       <div class="logo-group">
         <div class="logo-mark">〜</div>
         <div>
-          <div class="app-name">Current</div>
+          <div class="app-name">Current <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:400;color:#5870a0;letter-spacing:0.5px;vertical-align:middle;">v5</span></div>
           <div class="app-sub">PA &amp; NY River Monitor</div>
         </div>
       </div>
@@ -366,19 +366,34 @@ function getActiveGauges() {
 
 // ── Safety ────────────────────────────────────────────────────────────────────
 function getSafety(cfs, height) {
-  if (cfs === null && height === null) return { level:'unknown', label:'No Data', color:'loading' };
-  let score = 0;
-  if (cfs !== null) { if (cfs < 300) score+=0; else if (cfs < 800) score+=1; else score+=2; }
-  if (height !== null) { if (height < 3.0) score+=0; else if (height < 5.0) score+=1; else score+=2; }
-  if (score === 0) return { level:'safe', label:'Safe to Wade', color:'safe' };
-  if (score <= 2) return { level:'caution', label:'Use Caution', color:'caution' };
-  return { level:'danger', label:'Dangerous', color:'danger' };
+  if (cfs === null && height === null) return { level:'unknown', label:'No Data', color:'loading', cause:'' };
+  let cfsScore = 0, htScore = 0;
+  if (cfs !== null) { if (cfs < 300) cfsScore=0; else if (cfs < 800) cfsScore=1; else cfsScore=2; }
+  if (height !== null) { if (height < 3.0) htScore=0; else if (height < 5.0) htScore=1; else htScore=2; }
+  const score = cfsScore + htScore;
+  let cause = '';
+  if (score > 0) {
+    if (cfsScore > htScore) cause = 'flow rate';
+    else if (htScore > cfsScore) cause = 'gauge height';
+    else cause = 'flow & height';
+  }
+  if (score === 0) return { level:'safe', label:'Safe to Wade', color:'safe', cause:'' };
+  if (score <= 2) return { level:'caution', label:'Use Caution', color:'caution', cause };
+  return { level:'danger', label:'Dangerous', color:'danger', cause };
 }
 
-function getWadingAdvice(safety) {
-  if (safety.level==='safe') return 'Good wading conditions. Fish are likely active.';
-  if (safety.level==='caution') return 'Elevated flow. Experienced waders only. Use a wading staff and scout crossings.';
-  if (safety.level==='danger') return 'Dangerous conditions. Do not enter the water. Wait for levels to drop.';
+function getWadingAdvice(safety, cfs, height) {
+  if (safety.level === 'safe') return 'Good wading conditions. Fish are likely active.';
+  if (safety.level === 'danger') {
+    if (safety.cause === 'gauge height') return `Dangerous gauge height (${height !== null ? height.toFixed(2) + ' ft' : 'elevated'}). River may be flooded or backed up. Do not wade.`;
+    if (safety.cause === 'flow rate') return `Dangerous flow rate (${cfs !== null ? cfs.toFixed(0) + ' CFS' : 'high'}). Water is moving too fast to wade safely.`;
+    return 'Dangerous conditions. Do not enter the water. Wait for levels to drop.';
+  }
+  if (safety.level === 'caution') {
+    if (safety.cause === 'gauge height') return `Gauge height is elevated (${height !== null ? height.toFixed(2) + ' ft' : 'above normal'}) even though flow looks manageable. Water may be pooled or backed up. Experienced waders only.`;
+    if (safety.cause === 'flow rate') return `Flow is elevated (${cfs !== null ? cfs.toFixed(0) + ' CFS' : 'above normal'}). Experienced waders only — use a wading staff and scout before crossing.`;
+    return 'Both flow and height are elevated. Experienced waders only. Use a wading staff and scout crossings.';
+  }
   return 'Data unavailable. Check USGS directly before wading.';
 }
 
@@ -609,7 +624,10 @@ function renderCard(gauge, data) {
     <div class="card-body">
       <div class="card-top">
         <div><div class="river-name">${gauge.name}</div><div class="river-location">${gauge.location}</div></div>
-        <div class="safety-badge badge-${safety.color}">${safety.label}</div>
+        <div>
+          <div class="safety-badge badge-${safety.color}">${safety.label}</div>
+          ${safety.cause ? `<div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--ink-light);text-align:right;margin-top:4px;letter-spacing:0.3px;">↑ ${safety.cause}</div>` : ''}
+        </div>
       </div>
       <div class="metrics-row">
         <div class="metric-box">
@@ -632,7 +650,7 @@ function renderCard(gauge, data) {
       ${rain}
       <div class="wading-strip ${stripClass}">
         <span class="wading-icon">${icon}</span>
-        <span>${getWadingAdvice(safety)}</span>
+        <span>${getWadingAdvice(safety, cfs, height)}</span>
       </div>
     </div>
   </div>`;
@@ -675,7 +693,7 @@ function openModal(siteId) {
     </div>
     <div class="modal-safety ${safetyClass}">
       <div class="modal-safety-title">${safety.label}</div>
-      <div class="modal-safety-text">${getWadingAdvice(safety)}</div>
+      <div class="modal-safety-text">${getWadingAdvice(safety, data.cfs, data.height)}</div>
     </div>
     <div class="modal-notes"><div class="notes-label">Fishing Notes</div><div class="notes-text">${gauge.notes}</div></div>
     <a href="https://waterdata.usgs.gov/monitoring-location/${gauge.id}/" target="_blank" class="usgs-link">
