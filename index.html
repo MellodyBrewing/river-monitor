@@ -81,7 +81,7 @@
   .metrics-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:7px; margin-bottom:10px; }
   .metric-box { background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:9px 10px; }
   .metric-label { font-family:'IBM Plex Mono',monospace; font-size:9px; font-weight:500; color:var(--ink-light); letter-spacing:1px; text-transform:uppercase; margin-bottom:4px; }
-  .metric-value { font-family:'IBM Plex Mono',monospace; font-size:19px; font-weight:500; color:var(--ink); line-height:1; display:flex; align-items:baseline; gap:4px; }
+  .metric-value { font-family:'IBM Plex Mono',monospace; font-size:clamp(15px,4.5vw,19px); font-weight:500; color:var(--ink); line-height:1; display:flex; align-items:baseline; gap:4px; }
   .trend-arrow { font-size:13px; font-weight:700; }
   .trend-up { color:var(--danger); }
   .trend-down { color:var(--safe); }
@@ -166,8 +166,37 @@
   .nav-btn { display:flex; flex-direction:column; align-items:center; gap:3px; background:none; border:none; font-family:'IBM Plex Mono',monospace; font-size:9px; letter-spacing:1px; text-transform:uppercase; color:var(--ink-light); cursor:pointer; padding:6px 20px; transition:color 0.15s; }
   .nav-btn.active { color:var(--accent); }
   .nav-icon { font-size:20px; }
-  .view { display:none; }
-  .view.active { display:block; }
+  .view{display:none;}.view.active{display:block;}
+  /* Edit mode & remove button */
+  .toolbar-right{display:flex;gap:8px;align-items:center;}
+  .edit-btn{display:flex;align-items:center;gap:5px;background:var(--bg-section);border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;color:var(--ink-light);cursor:pointer;transition:all 0.15s;}
+  .edit-btn.active{background:#fff0e0;border-color:#f0c060;color:#a05c00;}
+  .river-card{position:relative;}
+  .remove-btn{position:absolute;top:8px;right:8px;z-index:10;width:26px;height:26px;border-radius:50%;background:var(--danger);border:none;color:#fff;font-size:14px;line-height:1;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(192,32,12,0.35);}
+  .edit-mode .remove-btn{display:flex;}
+  .edit-mode .river-card{cursor:default!important;}
+
+  /* Add rivers drawer */
+  .drawer-overlay{position:fixed;inset:0;z-index:200;background:rgba(20,20,18,0.6);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:none;align-items:flex-end;}
+  .drawer-overlay.open{display:flex;}
+  .drawer{width:100%;max-width:430px;margin:0 auto;background:var(--bg-card);border-radius:20px 20px 0 0;padding:16px 0 calc(20px + env(safe-area-inset-bottom));animation:slide-up 0.28s cubic-bezier(0.34,1.4,0.64,1);max-height:82vh;display:flex;flex-direction:column;}
+  .drawer-handle{width:36px;height:4px;background:var(--ink-faint);border-radius:4px;margin:0 auto 14px;flex-shrink:0;}
+  .drawer-title{font-family:'Bitter',serif;font-size:18px;font-weight:700;color:var(--ink);padding:0 20px;margin-bottom:10px;flex-shrink:0;}
+  .drawer-search{margin:0 12px 8px;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:10px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--ink);outline:none;flex-shrink:0;}
+  .drawer-search:focus{border-color:var(--accent);}
+  .drawer-tabs{display:flex;gap:6px;padding:0 12px 8px;flex-shrink:0;}
+  .drawer-tab{flex:1;padding:7px 6px;background:var(--bg-section);border:1px solid var(--border);border-radius:8px;color:var(--ink-light);font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;text-transform:uppercase;cursor:pointer;transition:all 0.15s;}
+  .drawer-tab.active{background:var(--accent-bg);border-color:#c0d4f8;color:var(--accent);}
+  .drawer-list{overflow-y:auto;flex:1;padding:0 12px;}
+  .drawer-item{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;}
+  .drawer-item-name{font-family:'Bitter',serif;font-size:15px;font-weight:600;color:var(--ink);}
+  .drawer-item-loc{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-light);margin-top:2px;}
+  .drawer-add-btn{padding:6px 14px;border-radius:20px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;cursor:pointer;white-space:nowrap;border:1px solid;transition:all 0.15s;flex-shrink:0;margin-left:10px;}
+  .btn-add{background:var(--accent-bg);border-color:#c0d4f8;color:var(--accent);}
+  .btn-add:active{background:#d0e0fc;}
+  .btn-added{background:var(--safe-bg);border-color:var(--safe-border);color:var(--safe);cursor:default;}
+  .drawer-empty{text-align:center;padding:30px 20px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-faint);}
+
 </style>
 </head>
 <body>
@@ -201,7 +230,10 @@
     </div>
     <div class="toolbar">
       <span class="section-label" id="toolbarLabel">All Rivers</span>
-      <button class="refresh-btn" onclick="loadAllGauges()"><span id="refreshIcon">↻</span> Refresh</button>
+      <div class="toolbar-right">
+        <button class="edit-btn" id="editBtn" onclick="toggleEditMode()">✎ Edit</button>
+        <button class="refresh-btn" onclick="loadAllGauges()"><span id="refreshIcon">↻</span> Refresh</button>
+      </div>
     </div>
     <div id="paSection">
       <div class="section-head"><div class="section-title">Pennsylvania</div><div class="gauge-count" id="paCount"></div></div>
@@ -258,27 +290,79 @@
   <div class="modal"><div class="modal-handle"></div><div id="modalBody"></div></div>
 </div>
 
+
+<!-- Add rivers drawer -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer(event)">
+  <div class="drawer">
+    <div class="drawer-handle"></div>
+    <div class="drawer-title">Add Rivers</div>
+    <input class="drawer-search" id="drawerSearch" type="text" placeholder="Search streams…" oninput="filterDrawer()" autocomplete="off" autocorrect="off" spellcheck="false">
+    <div class="drawer-tabs">
+      <button class="drawer-tab active" onclick="setDrawerState('PA',this)">Pennsylvania</button>
+      <button class="drawer-tab" onclick="setDrawerState('NY',this)">New York</button>
+    </div>
+    <div class="drawer-list" id="drawerList"></div>
+  </div>
+</div>
+
 <script>
 // ── Gauge config with lat/lon for weather API ─────────────────────────────────
-const GAUGES = [
-  { id:'01476480', name:'Ridley Creek',             location:'Media, PA',              state:'PA', safeThreshold:80,   lat:39.917, lon:-75.408, notes:'Ridley Creek State Park section. HQ-TSF designated. Best waded below 80 CFS.' },
-  { id:'01480000', name:'Brandywine Creek',          location:'Chadds Ford, PA',        state:'PA', safeThreshold:300,  lat:39.862, lon:-75.591, notes:'Classic smallmouth bass fly fishing. Many access points in Chester County.' },
-  { id:'01491000', name:'Brandywine Creek (W Branch)',location:'Honey Brook, PA',       state:'PA', safeThreshold:200,  lat:40.057, lon:-75.914, notes:'Excellent limestone creek with wild brook trout.' },
-  { id:'01471000', name:'Tulpehocken Creek',         location:'Near Reading, PA',       state:'PA', safeThreshold:200,  lat:40.336, lon:-76.017, notes:"Class A wild trout stream below Blue Marsh Dam. Cold tailwater year-round. PA's premier tailwater fishery." },
-  { id:'01442500', name:'Brodhead Creek',            location:'Minisink Hills, PA',     state:'PA', safeThreshold:300,  lat:40.998, lon:-75.143, notes:'Pocono trout stream. Rises fast after rain — watch levels closely.' },
-  { id:'01439500', name:'Delaware River',            location:'Callicoon, NY/PA border',state:'PA', safeThreshold:1200, lat:41.762, lon:-75.059, notes:'Upper Delaware, premier trout and shad fishery. Check both PA and NY regs.' },
-  { id:'01473000', name:'Wissahickon Creek',         location:'Wissahickon Valley, PA', state:'PA', safeThreshold:150,  lat:40.072, lon:-75.217, notes:'Urban trout stream in Philadelphia. Stocked seasonally.' },
-  { id:'01350000', name:'Schoharie Creek',           location:'Burtonsville, NY',       state:'NY', safeThreshold:300,  lat:42.503, lon:-74.488, notes:'Catskill tributary. Famously productive wild trout water.' },
-  { id:'01362500', name:'Esopus Creek',              location:'Coldbrook, NY',          state:'NY', safeThreshold:300,  lat:42.009, lon:-74.389, notes:'Legendary Catskill trout stream. Reservoir releases affect flow significantly.' },
-  { id:'01372500', name:'Wallkill River',            location:'Gardiner, NY',           state:'NY', safeThreshold:300,  lat:41.685, lon:-74.168, notes:'Slow-moving bass and pickerel river in the Hudson Valley.' },
-  { id:'01421000', name:'Delaware River (W Branch)', location:'Hale Eddy, NY',          state:'NY', safeThreshold:800,  lat:41.973, lon:-75.186, notes:'One of the premier wild trout fisheries in the East.' },
-  { id:'01417000', name:'East Branch Delaware',      location:'Harvard, NY',            state:'NY', safeThreshold:500,  lat:42.068, lon:-75.117, notes:'Catskill classic. Tailwater below Pepacton Reservoir is cold year-round.' },
-  { id:'01420500', name:'Beaverkill',                location:'Cooks Falls, NY',        state:'NY', safeThreshold:400,  lat:41.940, lon:-74.987, notes:'Cradle of American fly fishing. Classic dry-fly water. Best wading below 400 CFS.' },
-  { id:'01419500', name:'Willowemoc Creek',          location:'Livingston Manor, NY',   state:'NY', safeThreshold:250,  lat:41.902, lon:-74.825, notes:'Catskill tributary joining the Beaverkill at Roscoe. Excellent wild trout.' },
+// ── Stream library ───────────────────────────────────────────────────────────
+const STREAM_LIBRARY = [
+  // Pennsylvania
+  { id:'01476480', name:'Ridley Creek',              location:'Media, PA',              state:'PA', safeThreshold:80,   lat:39.917,lon:-75.408, notes:'Ridley Creek State Park. HQ-TSF designated. Best waded below 80 CFS.' },
+  { id:'01480000', name:'Brandywine Creek',           location:'Chadds Ford, PA',        state:'PA', safeThreshold:300,  lat:39.862,lon:-75.591, notes:'Classic smallmouth bass fly water. Many access points in Chester County.' },
+  { id:'01491000', name:'Brandywine Creek (W Branch)',location:'Honey Brook, PA',        state:'PA', safeThreshold:200,  lat:40.057,lon:-75.914, notes:'Excellent limestone creek with wild brook trout.' },
+  { id:'01471000', name:'Tulpehocken Creek',          location:'Near Reading, PA',       state:'PA', safeThreshold:200,  lat:40.336,lon:-76.017, notes:"Class A wild trout below Blue Marsh Dam. Cold tailwater year-round." },
+  { id:'01442500', name:'Brodhead Creek',             location:'Minisink Hills, PA',     state:'PA', safeThreshold:300,  lat:40.998,lon:-75.143, notes:'Pocono trout stream. Rises fast after rain — watch levels closely.' },
+  { id:'01439500', name:'Delaware River',             location:'Callicoon, NY/PA border',state:'PA', safeThreshold:1200, lat:41.762,lon:-75.059, notes:'Upper Delaware. Premier trout and shad. Check both PA and NY regs.' },
+  { id:'01473000', name:'Wissahickon Creek',          location:'Wissahickon Valley, PA', state:'PA', safeThreshold:150,  lat:40.072,lon:-75.217, notes:'Urban trout stream in Philadelphia. Stocked seasonally.' },
+  { id:'01554000', name:'Spring Creek',               location:'Bellefonte, PA',         state:'PA', safeThreshold:200,  lat:40.913,lon:-77.779, notes:'World-class limestone spring creek. Often called the best trout stream in PA.' },
+  { id:'01553500', name:'Penns Creek',                location:'Penns Creek, PA',        state:'PA', safeThreshold:400,  lat:40.854,lon:-77.058, notes:'Famous for the Green Drake hatch in late May. Wild trout throughout.' },
+  { id:'01452500', name:'Lehigh River',               location:'Bethlehem, PA',          state:'PA', safeThreshold:400,  lat:40.625,lon:-75.370, notes:'Wild trout fishery above Lehighton. Excellent tailwater below Francis Walter Dam.' },
+  { id:'01470500', name:'Schuylkill River',           location:'Pottstown, PA',          state:'PA', safeThreshold:500,  lat:40.245,lon:-75.649, notes:'Good smallmouth and walleye. Multiple public access points.' },
+  { id:'01440400', name:'Brodhead Creek (Upper)',     location:'Analomink, PA',          state:'PA', safeThreshold:200,  lat:41.036,lon:-75.209, notes:'Upper Brodhead above East Stroudsburg. Smaller stream, wild trout, less pressure.' },
+  { id:'01567000', name:'Juniata River',              location:'Newport, PA',            state:'PA', safeThreshold:800,  lat:40.483,lon:-77.133, notes:'Outstanding smallmouth bass river. Trophy designation on sections near Huntingdon.' },
+  { id:'01481000', name:'West Branch Brandywine',     location:'Coatesville, PA',        state:'PA', safeThreshold:200,  lat:39.984,lon:-75.823, notes:'Wild trout and stocked sections near Coatesville.' },
+  // New York
+  { id:'01350000', name:'Schoharie Creek',            location:'Burtonsville, NY',       state:'NY', safeThreshold:300,  lat:42.503,lon:-74.488, notes:'Major Catskill tributary. Productive wild trout water.' },
+  { id:'01362500', name:'Esopus Creek',               location:'Coldbrook, NY',          state:'NY', safeThreshold:300,  lat:42.009,lon:-74.389, notes:'Legendary Catskill stream. Reservoir releases can cause sudden rises.' },
+  { id:'01372500', name:'Wallkill River',             location:'Gardiner, NY',           state:'NY', safeThreshold:300,  lat:41.685,lon:-74.168, notes:'Slower Hudson Valley river. Good bass and pickerel. Easy wading.' },
+  { id:'01421000', name:'Delaware River (W Branch)',  location:'Hale Eddy, NY',          state:'NY', safeThreshold:800,  lat:41.973,lon:-75.186, notes:'Premier wild trout fishery in the East. Cold Cannonsville releases.' },
+  { id:'01417000', name:'East Branch Delaware',       location:'Harvard, NY',            state:'NY', safeThreshold:500,  lat:42.068,lon:-75.117, notes:'Catskill classic. Tailwater below Pepacton stays cold year-round.' },
+  { id:'01420500', name:'Beaverkill',                 location:'Cooks Falls, NY',        state:'NY', safeThreshold:400,  lat:41.940,lon:-74.987, notes:'Cradle of American fly fishing. Classic dry-fly water with wild browns.' },
+  { id:'01419500', name:'Willowemoc Creek',           location:'Livingston Manor, NY',   state:'NY', safeThreshold:250,  lat:41.902,lon:-74.825, notes:'Classic Catskill tributary joining the Beaverkill at Junction Pool in Roscoe.' },
+  { id:'01313500', name:'Ausable River (W Branch)',   location:'Wilmington, NY',         state:'NY', safeThreshold:400,  lat:44.377,lon:-73.832, notes:'Adirondack wild trout stream. Famous for large wild browns. Cold year-round.' },
+  { id:'01315000', name:'Ausable River (E Branch)',   location:'Ausable Forks, NY',      state:'NY', safeThreshold:350,  lat:44.518,lon:-73.685, notes:'East Branch Ausable. Excellent wild trout in the Adirondacks.' },
+  { id:'04260500', name:'Salmon River',               location:'Pulaski, NY',            state:'NY', safeThreshold:600,  lat:43.568,lon:-76.127, notes:'World-class steelhead and salmon river. Best Oct-Nov for Chinook, spring for steelhead.' },
+  { id:'01357500', name:'Catskill Creek',             location:'Catskill, NY',           state:'NY', safeThreshold:300,  lat:42.213,lon:-73.863, notes:'Catskill tributary of the Hudson. Wild trout in upper reaches.' },
+  { id:'01423000', name:'Neversink River',            location:'Godeffroy, NY',          state:'NY', safeThreshold:350,  lat:41.439,lon:-74.599, notes:'Famous Catskill trout stream. Wild browns and rainbows. Stunning Neversink Gorge.' },
 ];
 
+// Default rivers shown on first load
+const DEFAULT_IDS = [
+  '01476480','01480000','01491000','01471000','01442500','01439500','01473000',
+  '01350000','01362500','01372500','01421000','01417000','01420500','01419500'
+];
+
+function loadActiveIds() {
+  try { const s = localStorage.getItem('currentActiveGauges'); if (s) return JSON.parse(s); } catch(e) {}
+  return [...DEFAULT_IDS];
+}
+function saveActiveIds() {
+  try { localStorage.setItem('currentActiveGauges', JSON.stringify(activeIds)); } catch(e) {}
+}
+
+let activeIds = loadActiveIds();
 let gaugeData = {};
 let currentFilter = 'ALL';
+let editMode = false;
+let drawerState = 'PA';
+
+function getActiveGauges() {
+  return activeIds.map(id => STREAM_LIBRARY.find(g => g.id === id)).filter(Boolean);
+}
+
 
 // ── Safety ────────────────────────────────────────────────────────────────────
 function getSafety(cfs, height) {
@@ -332,7 +416,7 @@ function buildSparkline(history, safeThreshold, currentCfs, safetyColor) {
   const lastY = yScale(history[history.length-1].v).toFixed(1);
   const maxLabel = yMax>=1000?`${(yMax/1000).toFixed(1)}k`:Math.round(yMax);
   const maxY = yScale(yMax).toFixed(1);
-  const fmtDate = d => new Date(d).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  const fmtDate = d => new Date(d.substring(0,10)+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});
   return `<div class="chart-wrap">
     <div class="chart-header">
       <span class="chart-label">14-Day Flow (CFS)</span>
@@ -364,7 +448,7 @@ function buildRainChart(rainHours) {
   const blocks = [];
   for (let i = 0; i < 48; i += 8) {
     const chunk = rainHours.slice(i, i+8);
-    const total = chunk.reduce((s,v)=>s+v.mm, 0);
+    const total = chunk.reduce((s,v)=>s+(typeof v.mm==='number'&&!isNaN(v.mm)?v.mm:0), 0);
     const time = chunk[0] ? chunk[0].time : '';
     blocks.push({ total: total.toFixed(1), time });
   }
@@ -402,6 +486,12 @@ function buildRainChart(rainHours) {
 }
 
 // ── Proxy fetch ───────────────────────────────────────────────────────────────
+function fetchWithTimeout(url, ms=8000) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), ms);
+  return fetch(url, {signal: ctrl.signal}).finally(() => clearTimeout(timer));
+}
+
 async function proxyFetch(targetUrl) {
   const proxies = [
     u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
@@ -409,7 +499,7 @@ async function proxyFetch(targetUrl) {
   ];
   for (const proxy of proxies) {
     try {
-      const res = await fetch(proxy(targetUrl), { signal: AbortSignal.timeout(8000) });
+      const res = await fetchWithTimeout(proxy(targetUrl));
       if (res.ok) return res;
     } catch(e) { /* next */ }
   }
@@ -430,7 +520,7 @@ async function fetchGaugeData(gauge) {
     const [rtRes, histRes, wxRes] = await Promise.all([
       proxyFetch(rtTarget),
       proxyFetch(histTarget),
-      fetch(weatherTarget)
+      fetchWithTimeout(weatherTarget)
     ]);
     const rtJson = await rtRes.json();
     const histJson = await histRes.json();
@@ -477,8 +567,8 @@ async function fetchGaugeData(gauge) {
     if (wxJson?.hourly?.time && wxJson?.hourly?.precipitation) {
       const now = new Date();
       rainHours = wxJson.hourly.time
-        .map((t,i)=>({time:t, mm:wxJson.hourly.precipitation[i]}))
-        .filter(r=>new Date(r.time)>=now)
+        .map((t,i)=>({time:t, mm:wxJson.hourly.precipitation[i]??0}))
+        .filter(r=>new Date(r.time.replace('T',' ')+'Z')>=now)
         .slice(0,48);
     }
 
@@ -512,7 +602,9 @@ function renderCard(gauge, data) {
   const sparkline = buildSparkline(history||[],gauge.safeThreshold,cfs,safety.color);
   const rain = buildRainChart(rainHours||[]);
 
-  return `<div class="river-card" onclick="openModal('${gauge.id}')">
+  const clickHandler = editMode ? '' : `onclick="openModal('${gauge.id}')"`;  
+  return `<div class="river-card" ${clickHandler}>
+    <button class="remove-btn" onclick="removeRiver('${gauge.id}',event)" title="Remove">✕</button>
     <div class="card-status-bar ${barClass}"></div>
     <div class="card-body">
       <div class="card-top">
@@ -547,7 +639,8 @@ function renderCard(gauge, data) {
 }
 
 function openModal(siteId) {
-  const gauge = GAUGES.find(g=>g.id===siteId);
+  const gauge = STREAM_LIBRARY.find(g=>g.id===siteId);
+  if (!gauge) return;
   const data = gaugeData[siteId]||{cfs:null,height:null,tempF:null,prevCfs:null,history:[],rainHours:[]};
   const safety = getSafety(data.cfs,data.height);
   const trend = getTrend(data.cfs,data.prevCfs);
@@ -595,18 +688,98 @@ function closeModal(e) {
   if (e.target===document.getElementById('modalOverlay')) document.getElementById('modalOverlay').classList.remove('open');
 }
 
+
+// ── Edit mode ─────────────────────────────────────────────────────────────────
+function toggleEditMode() {
+  editMode = !editMode;
+  const btn = document.getElementById('editBtn');
+  const lists = [document.getElementById('paList'), document.getElementById('nyList')];
+  if (editMode) {
+    btn.classList.add('active');
+    btn.textContent = '✓ Done';
+    lists.forEach(l => l.classList.add('edit-mode'));
+    openDrawer();
+  } else {
+    btn.classList.remove('active');
+    btn.textContent = '✎ Edit';
+    lists.forEach(l => l.classList.remove('edit-mode'));
+    closeDrawerDirect();
+  }
+}
+
+function removeRiver(id, e) {
+  e.stopPropagation();
+  activeIds = activeIds.filter(i => i !== id);
+  saveActiveIds();
+  renderAll();
+  renderDrawerList();
+}
+
+// ── Add rivers drawer ─────────────────────────────────────────────────────────
+function openDrawer() {
+  document.getElementById('drawerOverlay').classList.add('open');
+  renderDrawerList();
+}
+function closeDrawer(e) {
+  if (e.target === document.getElementById('drawerOverlay')) closeDrawerDirect();
+}
+function closeDrawerDirect() {
+  document.getElementById('drawerOverlay').classList.remove('open');
+}
+function setDrawerState(state, btn) {
+  drawerState = state;
+  document.querySelectorAll('.drawer-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderDrawerList();
+}
+function filterDrawer() { renderDrawerList(); }
+
+function renderDrawerList() {
+  const query = document.getElementById('drawerSearch').value.toLowerCase().trim();
+  const streams = STREAM_LIBRARY.filter(g => {
+    if (g.state !== drawerState) return false;
+    if (query && !g.name.toLowerCase().includes(query) && !g.location.toLowerCase().includes(query)) return false;
+    return true;
+  });
+  const list = document.getElementById('drawerList');
+  if (!streams.length) { list.innerHTML = '<div class="drawer-empty">No streams found</div>'; return; }
+  list.innerHTML = streams.map(g => {
+    const isActive = activeIds.includes(g.id);
+    return `<div class="drawer-item">
+      <div>
+        <div class="drawer-item-name">${g.name}</div>
+        <div class="drawer-item-loc">${g.location}</div>
+      </div>
+      <button class="drawer-add-btn ${isActive?'btn-added':'btn-add'}" ${isActive?'disabled':''} onclick="addRiver('${g.id}')">
+        ${isActive ? '✓ Added' : '+ Add'}
+      </button>
+    </div>`;
+  }).join('');
+}
+
+function addRiver(id) {
+  if (activeIds.includes(id)) return;
+  activeIds.push(id);
+  saveActiveIds();
+  renderAll();
+  renderDrawerList();
+  const gauge = STREAM_LIBRARY.find(g => g.id === id);
+  if (gauge) fetchGaugeData(gauge).then(data => { gaugeData[id] = data; renderAll(); });
+}
+
 async function loadAllGauges() {
   const icon = document.getElementById('refreshIcon');
   icon.classList.add('spin');
   document.getElementById('updateText').textContent='Loading…';
   document.getElementById('statusDot').style.background='#f0a820';
-  const paG=GAUGES.filter(g=>g.state==='PA'), nyG=GAUGES.filter(g=>g.state==='NY');
+  const active=getActiveGauges();
+  const paG=active.filter(g=>g.state==='PA'), nyG=active.filter(g=>g.state==='NY');
   document.getElementById('paList').innerHTML=paG.map(renderSkeleton).join('');
   document.getElementById('nyList').innerHTML=nyG.map(renderSkeleton).join('');
   document.getElementById('paCount').textContent=`${paG.length} gauges`;
   document.getElementById('nyCount').textContent=`${nyG.length} gauges`;
-  const results = await Promise.all(GAUGES.map(g=>fetchGaugeData(g)));
-  GAUGES.forEach((g,i)=>{ gaugeData[g.id]=results[i]; });
+  const results = await Promise.all(active.map(g=>fetchGaugeData(g)));
+  active.forEach((g,i)=>{ gaugeData[g.id]=results[i]; });
   renderAll();
   const now=new Date();
   document.getElementById('updateText').textContent=now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
@@ -617,8 +790,9 @@ async function loadAllGauges() {
 function renderAll() {
   document.getElementById('paSection').style.display=currentFilter==='NY'?'none':'block';
   document.getElementById('nySection').style.display=currentFilter==='PA'?'none':'block';
-  const pa=currentFilter==='NY'?[]:GAUGES.filter(g=>g.state==='PA');
-  const ny=currentFilter==='PA'?[]:GAUGES.filter(g=>g.state==='NY');
+  const active=getActiveGauges();
+  const pa=currentFilter==='NY'?[]:active.filter(g=>g.state==='PA');
+  const ny=currentFilter==='PA'?[]:active.filter(g=>g.state==='NY');
   document.getElementById('paList').innerHTML=pa.map(g=>renderCard(g,gaugeData[g.id]||{cfs:null,height:null,tempF:null,prevCfs:null,history:[],rainHours:[]})).join('');
   document.getElementById('nyList').innerHTML=ny.map(g=>renderCard(g,gaugeData[g.id]||{cfs:null,height:null,tempF:null,prevCfs:null,history:[],rainHours:[]})).join('');
 }
