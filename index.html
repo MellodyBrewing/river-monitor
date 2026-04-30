@@ -172,9 +172,6 @@
   .edit-btn{display:flex;align-items:center;gap:5px;background:var(--bg-section);border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;color:var(--ink-light);cursor:pointer;transition:all 0.15s;}
   .edit-btn.active{background:#fff0e0;border-color:#f0c060;color:#a05c00;}
   .river-card{position:relative;}
-  .remove-btn{position:absolute;top:8px;right:8px;z-index:10;width:26px;height:26px;border-radius:50%;background:var(--danger);border:none;color:#fff;font-size:14px;line-height:1;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(192,32,12,0.35);}
-  .edit-mode .remove-btn{display:flex;}
-  .edit-mode .river-card{cursor:default!important;}
 
   /* Add rivers drawer */
   .drawer-overlay{position:fixed;inset:0;z-index:200;background:rgba(20,20,18,0.6);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:none;align-items:flex-end;}
@@ -196,6 +193,12 @@
   .btn-add:active{background:#d0e0fc;}
   .btn-added{background:var(--safe-bg);border-color:var(--safe-border);color:var(--safe);cursor:default;}
   .drawer-empty{text-align:center;padding:30px 20px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-faint);}
+  .drawer-section-label{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--ink-light);padding:4px 2px 8px;margin-top:2px;}
+  .drawer-item-active{border-color:var(--safe-border);background:var(--safe-bg);}
+  .drawer-item-active .drawer-item-name{color:var(--safe);}
+  .drawer-item-active .drawer-item-loc{color:#6aaa88;}
+  .btn-remove{background:#fdecea;border-color:var(--danger-border);color:var(--danger);}
+  .btn-remove:active{background:#fad4d0;}
 
 </style>
 </head>
@@ -231,7 +234,7 @@
     <div class="toolbar">
       <span class="section-label" id="toolbarLabel">All Rivers</span>
       <div class="toolbar-right">
-        <button class="edit-btn" id="editBtn" onclick="toggleEditMode()">✎ Edit</button>
+        <button class="edit-btn" id="editBtn" onclick="toggleEditMode()">⊕ Rivers</button>
         <button class="refresh-btn" onclick="loadAllGauges()"><span id="refreshIcon">↻</span> Refresh</button>
       </div>
     </div>
@@ -295,7 +298,10 @@
 <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer(event)">
   <div class="drawer">
     <div class="drawer-handle"></div>
-    <div class="drawer-title">Add Rivers</div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:0 20px;margin-bottom:10px;">
+      <div class="drawer-title" style="margin-bottom:0;">Add Rivers</div>
+      <button onclick="toggleEditMode()" style="background:var(--ink);border:none;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;padding:7px 14px;border-radius:20px;cursor:pointer;letter-spacing:0.5px;">✓ Done</button>
+    </div>
     <input class="drawer-search" id="drawerSearch" type="text" placeholder="Search streams…" oninput="filterDrawer()" autocomplete="off" autocorrect="off" spellcheck="false">
     <div class="drawer-tabs">
       <button class="drawer-tab active" onclick="setDrawerState('PA',this)">Pennsylvania</button>
@@ -619,7 +625,6 @@ function renderCard(gauge, data) {
 
   const clickHandler = editMode ? '' : `onclick="openModal('${gauge.id}')"`;  
   return `<div class="river-card" ${clickHandler}>
-    <button class="remove-btn" onclick="removeRiver('${gauge.id}',event)" title="Remove">✕</button>
     <div class="card-status-bar ${barClass}"></div>
     <div class="card-body">
       <div class="card-top">
@@ -711,22 +716,19 @@ function closeModal(e) {
 function toggleEditMode() {
   editMode = !editMode;
   const btn = document.getElementById('editBtn');
-  const lists = [document.getElementById('paList'), document.getElementById('nyList')];
   if (editMode) {
     btn.classList.add('active');
     btn.textContent = '✓ Done';
-    lists.forEach(l => l.classList.add('edit-mode'));
     openDrawer();
   } else {
     btn.classList.remove('active');
-    btn.textContent = '✎ Edit';
-    lists.forEach(l => l.classList.remove('edit-mode'));
+    btn.textContent = '⊕ Rivers';
     closeDrawerDirect();
   }
 }
 
 function removeRiver(id, e) {
-  e.stopPropagation();
+  if (e && e.stopPropagation) e.stopPropagation();
   activeIds = activeIds.filter(i => i !== id);
   saveActiveIds();
   renderAll();
@@ -739,7 +741,11 @@ function openDrawer() {
   renderDrawerList();
 }
 function closeDrawer(e) {
-  if (e.target === document.getElementById('drawerOverlay')) closeDrawerDirect();
+  if (e.target === document.getElementById('drawerOverlay')) {
+    // Tapping outside the drawer exits edit mode entirely
+    if (editMode) toggleEditMode();
+    else closeDrawerDirect();
+  }
 }
 function closeDrawerDirect() {
   document.getElementById('drawerOverlay').classList.remove('open');
@@ -761,18 +767,42 @@ function renderDrawerList() {
   });
   const list = document.getElementById('drawerList');
   if (!streams.length) { list.innerHTML = '<div class="drawer-empty">No streams found</div>'; return; }
-  list.innerHTML = streams.map(g => {
-    const isActive = activeIds.includes(g.id);
-    return `<div class="drawer-item">
-      <div>
-        <div class="drawer-item-name">${g.name}</div>
-        <div class="drawer-item-loc">${g.location}</div>
-      </div>
-      <button class="drawer-add-btn ${isActive?'btn-added':'btn-add'}" ${isActive?'disabled':''} onclick="addRiver('${g.id}')">
-        ${isActive ? '✓ Added' : '+ Add'}
-      </button>
-    </div>`;
-  }).join('');
+
+  // Split into active (shown first) and available
+  const active = streams.filter(g => activeIds.includes(g.id));
+  const available = streams.filter(g => !activeIds.includes(g.id));
+
+  let html = '';
+
+  if (active.length) {
+    html += `<div class="drawer-section-label">On Your Dashboard</div>`;
+    html += active.map(g => `
+      <div class="drawer-item drawer-item-active">
+        <div>
+          <div class="drawer-item-name">${g.name}</div>
+          <div class="drawer-item-loc">${g.location}</div>
+        </div>
+        <button class="drawer-add-btn btn-remove" onclick="removeRiver('${g.id}', new Event('click'))">
+          − Remove
+        </button>
+      </div>`).join('');
+  }
+
+  if (available.length) {
+    html += `<div class="drawer-section-label" style="margin-top:${active.length?'14px':'0'}">Available to Add</div>`;
+    html += available.map(g => `
+      <div class="drawer-item">
+        <div>
+          <div class="drawer-item-name">${g.name}</div>
+          <div class="drawer-item-loc">${g.location}</div>
+        </div>
+        <button class="drawer-add-btn btn-add" onclick="addRiver('${g.id}')">
+          + Add
+        </button>
+      </div>`).join('');
+  }
+
+  list.innerHTML = html;
 }
 
 function addRiver(id) {
