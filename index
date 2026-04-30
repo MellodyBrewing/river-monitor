@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Current · River Monitor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f2ed;
+    --bg-card: #ffffff;
+    --bg-section: #eceae4;
+    --ink: #1a1a18;
+    --ink-mid: #444440;
+    --ink-light: #888880;
+    --ink-faint: #c0bdb6;
+    --safe: #1a7a4a;
+    --safe-bg: #e8f7ee;
+    --safe-border: #a8dfc0;
+    --caution: #a05c00;
+    --caution-bg: #fff4e0;
+    --caution-border: #f0c060;
+    --danger: #c0200c;
+    --danger-bg: #fdecea;
+    --danger-border: #f0a090;
+    --accent: #2060c0;
+    --accent-bg: #e8f0fc;
+    --border: #dedad2;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.05);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  .app { max-width: 430px; margin: 0 auto; padding-bottom: 90px; }
+
+  /* Header */
+  header {
+    background: var(--ink);
+    padding: 52px 20px 0;
+    position: sticky; top: 0; z-index: 40;
+  }
+  .header-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-bottom: 14px;
+  }
+  .logo-group { display: flex; align-items: center; gap: 10px; }
+  .logo-mark {
+    width: 36px; height: 36px; background: #2a7fff;
+    border-radius: 10px; display: flex; align-items: center;
+    justify-content: center; font-size: 18px;
+  }
+  .app-name {
+    font-family: 'Bitter', serif; font-size: 22px; font-weight: 700;
+    color: #ffffff; letter-spacing: -0.3px;
+  }
+  .app-sub {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    color: #8890a0; letter-spacing: 1px; text-transform: uppercase; margin-top: 1px;
+  }
+  .status-pill {
+    display: flex; align-items: center; gap: 5px;
+    background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 20px; padding: 5px 10px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: #8890a0;
+  }
+  .pulse-dot {
+    width: 6px; height: 6px; border-radius: 50%; background: #40c070;
+    flex-shrink: 0; animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+
+  /* Tabs */
+  .tabs-bar { display: flex; gap: 6px; padding: 0 0 14px; }
+  .tab {
+    flex: 1; padding: 9px 8px;
+    background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px; color: #8890a0;
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 500;
+    letter-spacing: 0.5px; text-transform: uppercase; cursor: pointer; transition: all 0.15s;
+  }
+  .tab.active { background: #2a7fff; border-color: #2a7fff; color: #ffffff; }
+
+  /* Legend */
+  .legend-bar {
+    display: flex; margin: 14px 12px 0;
+    border-radius: 10px; overflow: hidden; border: 1px solid var(--border);
+  }
+  .legend-item {
+    flex: 1; padding: 8px 6px;
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 500; letter-spacing: 0.5px;
+  }
+  .legend-item:not(:last-child) { border-right: 1px solid var(--border); }
+  .li-safe { background: var(--safe-bg); color: var(--safe); }
+  .li-caution { background: var(--caution-bg); color: var(--caution); }
+  .li-danger { background: var(--danger-bg); color: var(--danger); }
+  .legend-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+  /* Toolbar */
+  .toolbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 16px 4px;
+  }
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 500;
+    letter-spacing: 2px; text-transform: uppercase; color: var(--ink-light);
+  }
+  .refresh-btn {
+    display: flex; align-items: center; gap: 5px;
+    background: var(--accent-bg); border: 1px solid #c0d4f8; border-radius: 20px;
+    padding: 6px 12px; font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px; font-weight: 500; color: var(--accent); cursor: pointer;
+    transition: background 0.15s; letter-spacing: 0.5px;
+  }
+  .refresh-btn:active { background: #d0e0fc; }
+  .spin { animation: spin 1s linear infinite; display: inline-block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Section headers */
+  .section-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 16px 8px;
+  }
+  .section-title {
+    font-family: 'Bitter', serif; font-size: 17px; font-weight: 700; color: var(--ink);
+  }
+  .gauge-count {
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--ink-light);
+    background: var(--bg-section); padding: 3px 8px; border-radius: 10px;
+  }
+
+  /* River cards */
+  .river-list { padding: 0 12px; display: flex; flex-direction: column; gap: 10px; }
+
+  .river-card {
+    background: var(--bg-card); border-radius: 14px;
+    border: 1px solid var(--border); box-shadow: var(--shadow);
+    overflow: hidden; cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .river-card:active { transform: scale(0.985); box-shadow: none; }
+
+  .card-status-bar { height: 5px; }
+  .bar-safe { background: var(--safe); }
+  .bar-caution { background: #f0a820; }
+  .bar-danger { background: var(--danger); }
+  .bar-loading { background: var(--ink-faint); }
+
+  .card-body { padding: 14px 16px 16px; }
+
+  .card-top {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 12px;
+  }
+  .river-name {
+    font-family: 'Bitter', serif; font-size: 17px; font-weight: 700;
+    color: var(--ink); line-height: 1.2;
+  }
+  .river-location {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    color: var(--ink-light); margin-top: 3px; letter-spacing: 0.3px;
+  }
+  .safety-badge {
+    padding: 5px 11px; border-radius: 20px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 500;
+    letter-spacing: 0.5px; text-transform: uppercase; white-space: nowrap;
+    flex-shrink: 0; margin-left: 8px; border: 1px solid;
+  }
+  .badge-safe { background: var(--safe-bg); color: var(--safe); border-color: var(--safe-border); }
+  .badge-caution { background: var(--caution-bg); color: var(--caution); border-color: var(--caution-border); }
+  .badge-danger { background: var(--danger-bg); color: var(--danger); border-color: var(--danger-border); }
+  .badge-loading { background: var(--bg-section); color: var(--ink-light); border-color: var(--border); }
+
+  .metrics-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+  .metric-box {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px;
+  }
+  .metric-label {
+    font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 500;
+    color: var(--ink-light); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px;
+  }
+  .metric-value {
+    font-family: 'IBM Plex Mono', monospace; font-size: 22px; font-weight: 500;
+    color: var(--ink); line-height: 1;
+  }
+  .metric-unit {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--ink-light); margin-top: 3px;
+  }
+
+  /* ── Sparkline chart ── */
+  .chart-wrap {
+    margin-bottom: 10px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px 8px;
+  }
+  .chart-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 8px;
+  }
+  .chart-label {
+    font-family: 'IBM Plex Mono', monospace; font-size: 9px; font-weight: 500;
+    color: var(--ink-light); letter-spacing: 1px; text-transform: uppercase;
+  }
+  .chart-legend {
+    display: flex; align-items: center; gap: 10px;
+  }
+  .chart-legend-item {
+    display: flex; align-items: center; gap: 4px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 9px; color: var(--ink-light);
+  }
+  .sparkline-svg { width: 100%; display: block; }
+  .chart-date-row {
+    display: flex; justify-content: space-between;
+    margin-top: 5px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 8px; color: var(--ink-faint);
+  }
+  .chart-loading {
+    height: 60px; display: flex; align-items: center; justify-content: center;
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; color: var(--ink-faint);
+  }
+
+  /* Wading strip */
+  .wading-strip {
+    display: flex; align-items: flex-start; gap: 8px;
+    padding: 9px 11px; border-radius: 8px; border: 1px solid;
+    font-size: 12px; line-height: 1.5; font-weight: 500;
+  }
+  .wading-strip.safe { background: var(--safe-bg); border-color: var(--safe-border); color: var(--safe); }
+  .wading-strip.caution { background: var(--caution-bg); border-color: var(--caution-border); color: var(--caution); }
+  .wading-strip.danger { background: var(--danger-bg); border-color: var(--danger-border); color: var(--danger); }
+  .wading-strip.unknown { background: var(--bg-section); border-color: var(--border); color: var(--ink-light); }
+  .wading-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+
+  /* Skeleton */
+  .skeleton {
+    background: linear-gradient(90deg, #e8e4dc 25%, #f0ece4 50%, #e8e4dc 75%);
+    background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 6px;
+  }
+  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+  .sk-name { height: 20px; width: 60%; margin-bottom: 6px; }
+  .sk-loc { height: 11px; width: 40%; margin-bottom: 14px; }
+  .sk-box { height: 56px; border-radius: 10px; }
+  .sk-chart { height: 80px; border-radius: 10px; margin-bottom: 10px; }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 100;
+    background: rgba(20,20,18,0.6); backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px); display: none; align-items: flex-end;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    width: 100%; max-width: 430px; margin: 0 auto;
+    background: var(--bg-card); border-radius: 20px 20px 0 0;
+    padding: 16px 20px calc(40px + env(safe-area-inset-bottom));
+    animation: slide-up 0.28s cubic-bezier(0.34,1.4,0.64,1);
+    max-height: 88vh; overflow-y: auto;
+  }
+  @keyframes slide-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .modal-handle {
+    width: 36px; height: 4px; background: var(--ink-faint);
+    border-radius: 4px; margin: 0 auto 18px;
+  }
+  .modal-river-name {
+    font-family: 'Bitter', serif; font-size: 24px; font-weight: 700;
+    color: var(--ink); margin-bottom: 3px;
+  }
+  .modal-location {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+    color: var(--ink-light); letter-spacing: 0.5px; margin-bottom: 18px;
+  }
+  .modal-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .modal-metric {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 14px;
+  }
+  .modal-metric .metric-value { font-size: 26px; }
+  .modal-safety {
+    padding: 14px 16px; border-radius: 12px; border: 1px solid; margin-bottom: 14px;
+  }
+  .modal-safety.safe { background: var(--safe-bg); border-color: var(--safe-border); }
+  .modal-safety.caution { background: var(--caution-bg); border-color: var(--caution-border); }
+  .modal-safety.danger { background: var(--danger-bg); border-color: var(--danger-border); }
+  .modal-safety.unknown { background: var(--bg-section); border-color: var(--border); }
+  .modal-safety-title {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 500;
+    letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 5px;
+  }
+  .safe .modal-safety-title { color: var(--safe); }
+  .caution .modal-safety-title { color: var(--caution); }
+  .danger .modal-safety-title { color: var(--danger); }
+  .unknown .modal-safety-title { color: var(--ink-light); }
+  .modal-safety-text { font-size: 13px; line-height: 1.6; color: var(--ink-mid); }
+  .modal-notes {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px; margin-bottom: 12px;
+  }
+  .notes-label {
+    font-family: 'IBM Plex Mono', monospace; font-size: 10px; font-weight: 500;
+    letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink-light); margin-bottom: 6px;
+  }
+  .notes-text { font-size: 13px; line-height: 1.65; color: var(--ink-mid); }
+  .usgs-link {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 13px 16px; background: var(--accent-bg); border: 1px solid #c0d4f8;
+    border-radius: 12px; text-decoration: none; color: var(--accent);
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px; font-weight: 500;
+  }
+
+  /* About */
+  .about-wrap { padding: 16px; }
+  .about-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 18px; margin-bottom: 12px; box-shadow: var(--shadow);
+  }
+  .about-title {
+    font-family: 'Bitter', serif; font-size: 16px; font-weight: 700;
+    color: var(--ink); margin-bottom: 10px;
+  }
+  .about-body { font-size: 13px; line-height: 1.7; color: var(--ink-mid); }
+  .thresh-table {
+    width: 100%; border-collapse: collapse; margin-top: 10px;
+    font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+  }
+  .thresh-table th {
+    text-align: left; padding: 7px 8px; color: var(--ink-light);
+    font-size: 9px; letter-spacing: 1px; text-transform: uppercase;
+    border-bottom: 2px solid var(--border);
+  }
+  .thresh-table td { padding: 8px; color: var(--ink-mid); border-bottom: 1px solid var(--border); }
+  .thresh-table tr:last-child td { border-bottom: none; }
+  td.t-safe { color: var(--safe); font-weight: 500; }
+  td.t-caution { color: var(--caution); font-weight: 500; }
+  td.t-danger { color: var(--danger); font-weight: 500; }
+
+  /* Bottom nav */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 50;
+    max-width: 430px; margin: 0 auto;
+    background: var(--bg-card); border-top: 1px solid var(--border);
+    padding: 10px 20px calc(10px + env(safe-area-inset-bottom));
+    display: flex; justify-content: space-around;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+  }
+  .nav-btn {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    background: none; border: none;
+    font-family: 'IBM Plex Mono', monospace; font-size: 9px;
+    letter-spacing: 1px; text-transform: uppercase;
+    color: var(--ink-light); cursor: pointer; padding: 6px 20px; transition: color 0.15s;
+  }
+  .nav-btn.active { color: var(--accent); }
+  .nav-icon { font-size: 20px; }
+
+  .view { display: none; }
+  .view.active { display: block; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="header-inner">
+      <div class="logo-group">
+        <div class="logo-mark">〜</div>
+        <div>
+          <div class="app-name">Current</div>
+          <div class="app-sub">PA &amp; NY River Monitor</div>
+        </div>
+      </div>
+      <div class="status-pill">
+        <div class="pulse-dot" id="statusDot"></div>
+        <span id="updateText">Loading…</span>
+      </div>
+    </div>
+    <div class="tabs-bar">
+      <button class="tab active" onclick="filterState('ALL',this)">All Rivers</button>
+      <button class="tab" onclick="filterState('PA',this)">Pennsylvania</button>
+      <button class="tab" onclick="filterState('NY',this)">New York</button>
+    </div>
+  </header>
+
+  <!-- River view -->
+  <div id="riverView" class="view active">
+    <div class="legend-bar">
+      <div class="legend-item li-safe"><div class="legend-dot" style="background:var(--safe)"></div>Safe</div>
+      <div class="legend-item li-caution"><div class="legend-dot" style="background:#f0a820"></div>Caution</div>
+      <div class="legend-item li-danger"><div class="legend-dot" style="background:var(--danger)"></div>Danger</div>
+    </div>
+    <div class="toolbar">
+      <span class="section-label" id="toolbarLabel">All Rivers</span>
+      <button class="refresh-btn" onclick="loadAllGauges()">
+        <span id="refreshIcon">↻</span> Refresh
+      </button>
+    </div>
+
+    <div id="paSection">
+      <div class="section-head">
+        <div class="section-title">Pennsylvania</div>
+        <div class="gauge-count" id="paCount"></div>
+      </div>
+      <div class="river-list" id="paList"></div>
+    </div>
+    <div style="height:10px"></div>
+    <div id="nySection">
+      <div class="section-head">
+        <div class="section-title">New York</div>
+        <div class="gauge-count" id="nyCount"></div>
+      </div>
+      <div class="river-list" id="nyList"></div>
+    </div>
+    <div style="height:16px"></div>
+  </div>
+
+  <!-- About view -->
+  <div id="aboutView" class="view">
+    <div class="about-wrap">
+      <div class="about-card">
+        <div class="about-title">How Safety Is Assessed</div>
+        <div class="about-body">Current uses real-time USGS stream gauge data to evaluate wading safety. Two factors are combined: <strong>flow rate (CFS)</strong> and <strong>gauge height (feet)</strong>. The worst of the two determines the overall rating.</div>
+      </div>
+      <div class="about-card">
+        <div class="about-title">Flow Rate (CFS)</div>
+        <table class="thresh-table">
+          <tr><th>Status</th><th>CFS</th><th>Guidance</th></tr>
+          <tr><td class="t-safe">✓ Safe</td><td>&lt; 300</td><td>Good wading</td></tr>
+          <tr><td class="t-caution">⚠ Caution</td><td>300–800</td><td>Experienced only</td></tr>
+          <tr><td class="t-danger">✕ Danger</td><td>&gt; 800</td><td>Do not wade</td></tr>
+        </table>
+      </div>
+      <div class="about-card">
+        <div class="about-title">Gauge Height</div>
+        <table class="thresh-table">
+          <tr><th>Status</th><th>Height</th><th>Note</th></tr>
+          <tr><td class="t-safe">✓ Safe</td><td>&lt; 3.0 ft</td><td>Low to normal</td></tr>
+          <tr><td class="t-caution">⚠ Caution</td><td>3–5 ft</td><td>Elevated</td></tr>
+          <tr><td class="t-danger">✕ Danger</td><td>&gt; 5 ft</td><td>Above bank</td></tr>
+        </table>
+      </div>
+      <div class="about-card">
+        <div class="about-title">Important Notes</div>
+        <div class="about-body">Thresholds vary by river size and character. Always consult current conditions and local forecasts before wading. These are general guidelines — never wade in flood conditions regardless of gauge readings.<br><br>Data sourced from <strong>USGS Water Resources</strong> via the National Water Information System. Updates every 15 minutes at source.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Bottom nav -->
+<div class="bottom-nav">
+  <button class="nav-btn active" id="navRivers" onclick="switchView('river')">
+    <span class="nav-icon">〜</span>Rivers
+  </button>
+  <button class="nav-btn" id="navAbout" onclick="switchView('about')">
+    <span class="nav-icon">◎</span>Guide
+  </button>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+const GAUGES = [
+  { id: '01476480', name: 'Ridley Creek', location: 'Media, PA', state: 'PA', safeThreshold: 80, notes: 'Ridley Creek State Park section. High-quality trout stocking fishery, designated HQ stream. Best waded below 80 CFS.' },
+  { id: '01480000', name: 'Brandywine Creek', location: 'Chadds Ford, PA', state: 'PA', safeThreshold: 300, notes: 'Classic fly fishing for smallmouth bass. Many access points in Chester County.' },
+  { id: '01491000', name: 'Brandywine Creek (W Branch)', location: 'Honey Brook, PA', state: 'PA', safeThreshold: 200, notes: 'Excellent limestone creek with wild brook trout.' },
+  { id: '01471000', name: 'Tulpehocken Creek', location: 'Near Reading, PA', state: 'PA', safeThreshold: 200, notes: 'Class A wild trout stream below Blue Marsh Dam. Cold tailwater keeps trout year-round. One of PA\'s premier fly fishing destinations.' },
+  { id: '01442500', name: 'Brodhead Creek', location: 'Minisink Hills, PA', state: 'PA', safeThreshold: 300, notes: 'Pocono Mountains trout stream, Delaware tributary. Excellent wild and stocked trout. Watch levels closely — rises fast after rain.' },
+  { id: '01439500', name: 'Delaware River', location: 'Callicoon, NY/PA border', state: 'PA', safeThreshold: 1200, notes: 'Upper Delaware, premier trout and shad fishery. Check both PA and NY regs.' },
+  { id: '01473000', name: 'Wissahickon Creek', location: 'Wissahickon Valley, PA', state: 'PA', safeThreshold: 150, notes: 'Urban trout stream in Philadelphia. Stocked seasonally.' },
+  { id: '01350000', name: 'Schoharie Creek', location: 'Burtonsville, NY', state: 'NY', safeThreshold: 300, notes: 'Catskill tributary. Famously productive wild trout water.' },
+  { id: '01362500', name: 'Esopus Creek', location: 'Coldbrook, NY', state: 'NY', safeThreshold: 300, notes: 'Legendary Catskill trout stream. Reservoir releases affect flow significantly.' },
+  { id: '01372500', name: 'Wallkill River', location: 'Gardiner, NY', state: 'NY', safeThreshold: 300, notes: 'Slow-moving bass and pickerel river in the Hudson Valley.' },
+  { id: '01421000', name: 'Delaware River (W Branch)', location: 'Hale Eddy, NY', state: 'NY', safeThreshold: 800, notes: 'One of the premier wild trout fisheries in the East.' },
+  { id: '01417000', name: 'East Branch Delaware', location: 'Harvard, NY', state: 'NY', safeThreshold: 500, notes: 'Catskill classic. Tailwater below Pepacton Reservoir is cold year-round.' },
+  { id: '01420500', name: 'Beaverkill', location: 'Cooks Falls, NY', state: 'NY', safeThreshold: 400, notes: 'The cradle of American fly fishing. Classic Catskill dry-fly water with wild brown trout. Best wading below 400 CFS.' },
+  { id: '01419500', name: 'Willowemoc Creek', location: 'Livingston Manor, NY', state: 'NY', safeThreshold: 250, notes: 'Legendary Catskill tributary that joins the Beaverkill at Roscoe. Excellent wild trout fishery, fishes well at lower flows.' },
+];
+
+let gaugeData = {};
+let currentFilter = 'ALL';
+
+// ── Safety ────────────────────────────────────────────────────────────────────
+function getSafety(cfs, height) {
+  if (cfs === null && height === null) return { level: 'unknown', label: 'No Data', color: 'loading' };
+  let score = 0;
+  if (cfs !== null) { if (cfs < 300) score += 0; else if (cfs < 800) score += 1; else score += 2; }
+  if (height !== null) { if (height < 3.0) score += 0; else if (height < 5.0) score += 1; else score += 2; }
+  if (score === 0) return { level: 'safe', label: 'Safe to Wade', color: 'safe' };
+  if (score <= 2) return { level: 'caution', label: 'Use Caution', color: 'caution' };
+  return { level: 'danger', label: 'Dangerous', color: 'danger' };
+}
+
+function getWadingAdvice(safety) {
+  if (safety.level === 'safe') return 'Good wading conditions. Fish are likely active.';
+  if (safety.level === 'caution') return 'Elevated flow. Experienced waders only. Use a wading staff and scout crossings.';
+  if (safety.level === 'danger') return 'Dangerous conditions. Do not enter the water. Wait for levels to drop.';
+  return 'Data unavailable. Check USGS directly before wading.';
+}
+
+// ── Sparkline ─────────────────────────────────────────────────────────────────
+function buildSparkline(history, safeThreshold, currentCfs, safetyColor) {
+  if (!history || history.length < 2) {
+    return `<div class="chart-loading">No historical data</div>`;
+  }
+
+  const W = 320, H = 68, PAD_L = 38, PAD_R = 8, PAD_T = 8, PAD_B = 4;
+  const plotW = W - PAD_L - PAD_R;
+  const plotH = H - PAD_T - PAD_B;
+
+  // Scale: max is highest of data, safe threshold, and current — with 20% headroom
+  const dataMax = Math.max(...history.map(d => d.v), safeThreshold * 1.1, currentCfs || 0);
+  const yMax = dataMax * 1.2;
+  const yMin = 0;
+
+  const xScale = i => PAD_L + (i / (history.length - 1)) * plotW;
+  const yScale = v => PAD_T + plotH - ((v - yMin) / (yMax - yMin)) * plotH;
+
+  // Build filled area path
+  const linePoints = history.map((d, i) => `${xScale(i).toFixed(1)},${yScale(d.v).toFixed(1)}`).join(' ');
+  const areaPoints = [
+    `${PAD_L},${PAD_T + plotH}`,
+    ...history.map((d, i) => `${xScale(i).toFixed(1)},${yScale(d.v).toFixed(1)}`),
+    `${PAD_L + plotW},${PAD_T + plotH}`
+  ].join(' ');
+
+  // Line color based on current safety
+  const lineColor = safetyColor === 'safe' ? '#1a7a4a' : safetyColor === 'caution' ? '#d08010' : safetyColor === 'danger' ? '#c0200c' : '#888880';
+  const areaColor = safetyColor === 'safe' ? 'rgba(26,122,74,0.08)' : safetyColor === 'caution' ? 'rgba(208,128,16,0.08)' : safetyColor === 'danger' ? 'rgba(192,32,12,0.1)' : 'rgba(136,136,128,0.06)';
+
+  // Safe threshold line Y position
+  const threshY = yScale(safeThreshold).toFixed(1);
+  const threshLabel = safeThreshold >= 1000 ? `${(safeThreshold/1000).toFixed(1)}k` : `${safeThreshold}`;
+
+  // Current dot (last point)
+  const lastX = xScale(history.length - 1).toFixed(1);
+  const lastY = yScale(history[history.length - 1].v).toFixed(1);
+
+  // Y-axis labels: 0, safe threshold, and max
+  const midVal = Math.round(yMax / 2);
+  const midY = yScale(midVal).toFixed(1);
+  const maxLabel = yMax >= 1000 ? `${(yMax/1000).toFixed(1)}k` : Math.round(yMax);
+  const maxY = yScale(yMax).toFixed(1);
+
+  // Date labels: start and end
+  const startDate = new Date(history[0].t);
+  const endDate = new Date(history[history.length - 1].t);
+  const fmtDate = d => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+  return `
+    <div class="chart-wrap">
+      <div class="chart-header">
+        <span class="chart-label">14-Day Flow (CFS)</span>
+        <div class="chart-legend">
+          <div class="chart-legend-item">
+            <div style="width:14px;height:2px;background:${lineColor};border-radius:2px"></div>
+            <span>Flow</span>
+          </div>
+          <div class="chart-legend-item">
+            <div style="width:14px;height:0;border-top:2px dashed #1a7a4a;opacity:0.7"></div>
+            <span style="color:#1a7a4a">Safe limit</span>
+          </div>
+        </div>
+      </div>
+      <svg class="sparkline-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+        <!-- Y axis labels -->
+        <text x="${PAD_L - 4}" y="${(PAD_T + plotH + 3).toFixed(1)}" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="7" fill="#c0bdb6">0</text>
+        <text x="${PAD_L - 4}" y="${(parseFloat(threshY) + 3).toFixed(1)}" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="7" fill="#1a7a4a">${threshLabel}</text>
+        <text x="${PAD_L - 4}" y="${(parseFloat(maxY) + 3).toFixed(1)}" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="7" fill="#c0bdb6">${maxLabel}</text>
+
+        <!-- Y axis line -->
+        <line x1="${PAD_L}" y1="${PAD_T}" x2="${PAD_L}" y2="${PAD_T + plotH}" stroke="#dedad2" stroke-width="1"/>
+
+        <!-- Zero baseline -->
+        <line x1="${PAD_L}" y1="${PAD_T + plotH}" x2="${PAD_L + plotW}" y2="${PAD_T + plotH}" stroke="#dedad2" stroke-width="1"/>
+
+        <!-- Safe threshold band fill (below threshold = safe zone) -->
+        <rect x="${PAD_L}" y="${threshY}" width="${plotW}" height="${(PAD_T + plotH - parseFloat(threshY)).toFixed(1)}" fill="rgba(26,122,74,0.05)"/>
+
+        <!-- Area fill under flow line -->
+        <polygon points="${areaPoints}" fill="${areaColor}"/>
+
+        <!-- Flow line -->
+        <polyline points="${linePoints}" fill="none" stroke="${lineColor}" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+
+        <!-- Safe threshold dashed line -->
+        <line x1="${PAD_L}" y1="${threshY}" x2="${PAD_L + plotW}" y2="${threshY}" stroke="#1a7a4a" stroke-width="1.2" stroke-dasharray="4,3" opacity="0.7"/>
+
+        <!-- Current value dot -->
+        <circle cx="${lastX}" cy="${lastY}" r="3" fill="${lineColor}" stroke="white" stroke-width="1.5"/>
+      </svg>
+      <div class="chart-date-row">
+        <span>${fmtDate(startDate)}</span>
+        <span>Today</span>
+      </div>
+    </div>`;
+}
+
+// ── API Fetch ─────────────────────────────────────────────────────────────────
+async function fetchGaugeData(siteId) {
+  // Fetch real-time current reading
+  const rtUrl = `https://corsproxy.io/?url=${encodeURIComponent(
+    `https://waterservices.usgs.gov/nwis/iv/?format=json&sites=${siteId}&parameterCd=00060,00065&siteStatus=active`
+  )}`;
+
+  // Fetch 14-day daily mean for sparkline (using daily values service)
+  const endDate = new Date();
+  const startDate = new Date();
+  startDate.setDate(startDate.getDate() - 14);
+  const fmt = d => d.toISOString().split('T')[0];
+  const histUrl = `https://corsproxy.io/?url=${encodeURIComponent(
+    `https://waterservices.usgs.gov/nwis/dv/?format=json&sites=${siteId}&parameterCd=00060&startDT=${fmt(startDate)}&endDT=${fmt(endDate)}`
+  )}`;
+
+  try {
+    const [rtRes, histRes] = await Promise.all([fetch(rtUrl), fetch(histUrl)]);
+    const rtJson = await rtRes.json();
+    const histJson = await histRes.json();
+
+    // Parse real-time
+    const series = rtJson?.value?.timeSeries || [];
+    let cfs = null, height = null, cfsTime = null, heightTime = null;
+    series.forEach(s => {
+      const code = s.variable?.variableCode?.[0]?.value;
+      const vals = s.values?.[0]?.value || [];
+      const latest = vals.find(v => v.value !== '-999999' && v.value !== '' && !isNaN(parseFloat(v.value)));
+      if (!latest) return;
+      const val = parseFloat(latest.value);
+      if (code === '00060') { cfs = val; cfsTime = latest.dateTime; }
+      if (code === '00065') { height = val; heightTime = latest.dateTime; }
+    });
+
+    // Parse 14-day history — daily mean CFS
+    const histSeries = histJson?.value?.timeSeries || [];
+    let history = [];
+    histSeries.forEach(s => {
+      const code = s.variable?.variableCode?.[0]?.value;
+      if (code !== '00060') return;
+      const vals = s.values?.[0]?.value || [];
+      history = vals
+        .filter(v => v.value !== '-999999' && v.value !== '' && !isNaN(parseFloat(v.value)))
+        .map(v => ({ t: v.dateTime, v: parseFloat(v.value) }))
+        .sort((a, b) => new Date(a.t) - new Date(b.t));
+    });
+
+    return { cfs, height, cfsTime, heightTime, history, error: false };
+  } catch(e) {
+    return { cfs: null, height: null, history: [], error: true };
+  }
+}
+
+// ── Rendering ─────────────────────────────────────────────────────────────────
+function renderSkeleton() {
+  return `<div class="river-card">
+    <div class="card-status-bar bar-loading"></div>
+    <div class="card-body">
+      <div class="skeleton sk-name"></div>
+      <div class="skeleton sk-loc"></div>
+      <div class="metrics-row">
+        <div class="skeleton sk-box"></div>
+        <div class="skeleton sk-box"></div>
+      </div>
+      <div class="skeleton sk-chart"></div>
+    </div>
+  </div>`;
+}
+
+function renderCard(gauge, data) {
+  const { cfs, height, history } = data;
+  const safety = getSafety(cfs, height);
+  const cfsStr = cfs !== null ? cfs.toFixed(0) : '—';
+  const htStr = height !== null ? height.toFixed(2) : '—';
+  const barClass = { safe:'bar-safe', caution:'bar-caution', danger:'bar-danger', loading:'bar-loading' }[safety.color];
+  const icon = { safe:'🎣', caution:'⚠️', danger:'🚫', unknown:'📡' }[safety.level] || '📡';
+  const stripClass = { safe:'safe', caution:'caution', danger:'danger', unknown:'unknown' }[safety.level] || 'unknown';
+  const sparkline = buildSparkline(history || [], gauge.safeThreshold, cfs, safety.color);
+
+  return `<div class="river-card" onclick="openModal('${gauge.id}')">
+    <div class="card-status-bar ${barClass}"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div>
+          <div class="river-name">${gauge.name}</div>
+          <div class="river-location">${gauge.location}</div>
+        </div>
+        <div class="safety-badge badge-${safety.color}">${safety.label}</div>
+      </div>
+      <div class="metrics-row">
+        <div class="metric-box">
+          <div class="metric-label">Flow Rate</div>
+          <div class="metric-value">${cfsStr}</div>
+          <div class="metric-unit">cu ft / sec</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Gauge Height</div>
+          <div class="metric-value">${htStr}</div>
+          <div class="metric-unit">feet</div>
+        </div>
+      </div>
+      ${sparkline}
+      <div class="wading-strip ${stripClass}">
+        <span class="wading-icon">${icon}</span>
+        <span>${getWadingAdvice(safety)}</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function openModal(siteId) {
+  const gauge = GAUGES.find(g => g.id === siteId);
+  const data = gaugeData[siteId] || { cfs: null, height: null, history: [] };
+  const safety = getSafety(data.cfs, data.height);
+  const cfsStr = data.cfs !== null ? data.cfs.toFixed(1) : '—';
+  const htStr = data.height !== null ? data.height.toFixed(2) : '—';
+  const fmt = t => t ? new Date(t).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}) : '';
+  const safetyClass = safety.level === 'unknown' ? 'unknown' : safety.level;
+
+  document.getElementById('modalBody').innerHTML = `
+    <div class="modal-river-name">${gauge.name}</div>
+    <div class="modal-location">${gauge.location} · USGS ${gauge.id}</div>
+    <div class="modal-metrics">
+      <div class="modal-metric">
+        <div class="metric-label">Flow Rate</div>
+        <div class="metric-value">${cfsStr}</div>
+        <div class="metric-unit">cu ft / sec</div>
+        ${data.cfsTime ? `<div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--ink-light);margin-top:5px">${fmt(data.cfsTime)}</div>` : ''}
+      </div>
+      <div class="modal-metric">
+        <div class="metric-label">Gauge Height</div>
+        <div class="metric-value">${htStr}</div>
+        <div class="metric-unit">feet</div>
+        ${data.heightTime ? `<div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--ink-light);margin-top:5px">${fmt(data.heightTime)}</div>` : ''}
+      </div>
+    </div>
+    <div class="modal-safety ${safetyClass}">
+      <div class="modal-safety-title">${safety.label}</div>
+      <div class="modal-safety-text">${getWadingAdvice(safety)}</div>
+    </div>
+    <div class="modal-notes">
+      <div class="notes-label">Fishing Notes</div>
+      <div class="notes-text">${gauge.notes}</div>
+    </div>
+    <a href="https://waterdata.usgs.gov/monitoring-location/${gauge.id}/" target="_blank" class="usgs-link">
+      <span>View USGS hydrograph ↗</span>
+      <span style="color:var(--ink-light);font-size:9px">waterdata.usgs.gov</span>
+    </a>`;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modalOverlay'))
+    document.getElementById('modalOverlay').classList.remove('open');
+}
+
+// ── Load ──────────────────────────────────────────────────────────────────────
+async function loadAllGauges() {
+  const icon = document.getElementById('refreshIcon');
+  icon.classList.add('spin');
+  document.getElementById('updateText').textContent = 'Loading…';
+  document.getElementById('statusDot').style.background = '#f0a820';
+
+  const paGauges = GAUGES.filter(g => g.state === 'PA');
+  const nyGauges = GAUGES.filter(g => g.state === 'NY');
+  document.getElementById('paList').innerHTML = paGauges.map(renderSkeleton).join('');
+  document.getElementById('nyList').innerHTML = nyGauges.map(renderSkeleton).join('');
+  document.getElementById('paCount').textContent = `${paGauges.length} gauges`;
+  document.getElementById('nyCount').textContent = `${nyGauges.length} gauges`;
+
+  const results = await Promise.all(GAUGES.map(g => fetchGaugeData(g.id)));
+  GAUGES.forEach((g, i) => { gaugeData[g.id] = results[i]; });
+  renderAll();
+
+  const now = new Date();
+  document.getElementById('updateText').textContent = now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+  document.getElementById('statusDot').style.background = '#40c070';
+  icon.classList.remove('spin');
+}
+
+function renderAll() {
+  document.getElementById('paSection').style.display = currentFilter === 'NY' ? 'none' : 'block';
+  document.getElementById('nySection').style.display = currentFilter === 'PA' ? 'none' : 'block';
+  const pa = currentFilter === 'NY' ? [] : GAUGES.filter(g => g.state === 'PA');
+  const ny = currentFilter === 'PA' ? [] : GAUGES.filter(g => g.state === 'NY');
+  document.getElementById('paList').innerHTML = pa.map(g => renderCard(g, gaugeData[g.id] || {cfs:null,height:null,history:[]})).join('');
+  document.getElementById('nyList').innerHTML = ny.map(g => renderCard(g, gaugeData[g.id] || {cfs:null,height:null,history:[]})).join('');
+}
+
+function filterState(state, btn) {
+  currentFilter = state;
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('toolbarLabel').textContent = {ALL:'All Rivers',PA:'Pennsylvania',NY:'New York'}[state];
+  renderAll();
+}
+
+function switchView(view) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(view === 'river' ? 'riverView' : 'aboutView').classList.add('active');
+  document.getElementById(view === 'river' ? 'navRivers' : 'navAbout').classList.add('active');
+}
+
+loadAllGauges();
+setInterval(loadAllGauges, 15 * 60 * 1000);
+</script>
+</body>
+</html>
