@@ -77,7 +77,7 @@
   .badge-danger{background:var(--danger-bg);color:var(--danger);border-color:var(--danger-border);}
   .badge-loading{background:var(--bg-section);color:var(--ink-light);border-color:var(--border);}
 
-  /* Metrics row — now 3 columns */
+  /* Metrics row - now 3 columns */
   .metrics-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:7px; margin-bottom:10px; }
   .metric-box { background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:9px 10px; }
   .metric-label { font-family:'IBM Plex Mono',monospace; font-size:9px; font-weight:500; color:var(--ink-light); letter-spacing:1px; text-transform:uppercase; margin-bottom:4px; }
@@ -317,7 +317,8 @@
     </div>
   </header>
 
-  <div id="riverView" class="view active">
+  <div id="dbg" style="display:none;background:#1a1a18;color:#40c070;font-family:monospace;font-size:11px;padding:10px 16px;margin:8px 12px;border-radius:8px;white-space:pre-wrap;line-height:1.6;max-height:200px;overflow-y:auto;"></div>
+<div id="riverView" class="view active">
     <div class="legend-bar">
       <div class="legend-item li-safe"><div class="legend-dot" style="background:var(--safe)"></div>Safe</div>
       <div class="legend-item li-caution"><div class="legend-dot" style="background:#f0a820"></div>Caution</div>
@@ -361,11 +362,11 @@
         <div class="about-title">Water Temperature Guide</div>
         <table class="thresh-table">
           <tr><th>Temp (°F)</th><th>Trout Activity</th></tr>
-          <tr><td>&lt; 40°F</td><td>Sluggish — nymphs near bottom</td></tr>
-          <tr><td>45–55°F</td><td>Ideal — active feeding</td></tr>
-          <tr><td>55–65°F</td><td>Peak — hatches likely</td></tr>
-          <tr><td>65–70°F</td><td>Stressed — fish quickly</td></tr>
-          <tr><td>&gt; 70°F</td><td>Dangerous — do not fish</td></tr>
+          <tr><td>&lt; 40°F</td><td>Sluggish - nymphs near bottom</td></tr>
+          <tr><td>45–55°F</td><td>Ideal - active feeding</td></tr>
+          <tr><td>55–65°F</td><td>Peak - hatches likely</td></tr>
+          <tr><td>65–70°F</td><td>Stressed - fish quickly</td></tr>
+          <tr><td>&gt; 70°F</td><td>Dangerous - do not fish</td></tr>
         </table>
       </div>
       <div class="about-card">
@@ -509,7 +510,7 @@ function loadActiveIds() {
     const s = localStorage.getItem('currentActiveGauges_v6');
     if (s) {
       const parsed = JSON.parse(s);
-      // Validate — only keep IDs that exist in current STREAM_LIBRARY
+      // Validate - only keep IDs that exist in current STREAM_LIBRARY
       const valid = parsed.filter(id => STREAM_LIBRARY.find(g => g.id === id));
       if (valid.length > 0) return valid;
     }
@@ -1108,15 +1109,22 @@ function updateHatchCounts() {
 
 
 
+function dbg(m){const d=document.getElementById('dbg');if(d){d.style.display='block';d.textContent+=m+'\n';}}
+
 async function loadAllGauges() {
   const icon = document.getElementById('refreshIcon');
   icon.classList.add('spin');
   document.getElementById('updateText').textContent = 'Loading...';
   document.getElementById('statusDot').style.background = '#f0a820';
 
+  dbg('LIB:' + (typeof STREAM_LIBRARY!=='undefined'?STREAM_LIBRARY.length:'UNDEF'));
+  dbg('IDS:' + (typeof DEFAULT_IDS!=='undefined'?DEFAULT_IDS.length:'UNDEF'));
+  dbg('HATCH:' + (typeof HATCH_DB!=='undefined'?Object.keys(HATCH_DB).length:'UNDEF'));
+  dbg('PIN:' + (typeof pinnedIds!=='undefined'?pinnedIds.length:'UNDEF'));
 
-  // Get active gauges — with safety net
+  // Get active gauges - with safety net
   let active = getActiveGauges();
+  dbg('ACTIVE:' + active.length);
 
   if (active.length === 0) {
       activeIds = [...DEFAULT_IDS];
@@ -1132,16 +1140,17 @@ async function loadAllGauges() {
   document.getElementById('paCount').textContent = paG.length + ' gauges';
   document.getElementById('nyCount').textContent = nyG.length + ' gauges';
 
-  // Fetch all gauges — simple parallel fetch
+  // Fetch all gauges - simple parallel fetch
   try {
     const results = await Promise.all(active.map(g => fetchGaugeData(g)));
     active.forEach((g, i) => { gaugeData[g.id] = results[i]; });
   } catch(e) {
-    // Even if some fail, gaugeData will have partial results — render what we have
+    // Even if some fail, gaugeData will have partial results - render what we have
   }
 
   // Render everything
   const successCount = active.filter(g => gaugeData[g.id] && !gaugeData[g.id].error).length;
+  dbg('DONE:' + successCount + '/' + active.length);
   renderAll();
   updateHatchCounts();
 
