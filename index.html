@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -21,184 +22,217 @@
   body { font-family:'IBM Plex Sans',sans-serif; background:var(--bg); color:var(--ink); min-height:100vh; overflow-x:hidden; }
   .app { max-width:430px; margin:0 auto; padding-bottom:90px; }
 
-  /* Header */
-  header { background:var(--ink); padding:52px 20px 0; position:sticky; top:0; z-index:40; }
-  .header-inner { display:flex; align-items:center; justify-content:space-between; padding-bottom:14px; }
-  .logo-group { display:flex; align-items:center; gap:10px; }
-  .logo-mark { width:36px; height:36px; background:#2a7fff; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; }
-  .app-name { font-family:'Bitter',serif; font-size:22px; font-weight:700; color:#fff; letter-spacing:-0.3px; }
-  .app-sub { font-family:'IBM Plex Mono',monospace; font-size:10px; color:#8890a0; letter-spacing:1px; text-transform:uppercase; margin-top:1px; }
-  .status-pill { display:flex; align-items:center; gap:5px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); border-radius:20px; padding:5px 10px; font-family:'IBM Plex Mono',monospace; font-size:10px; color:#8890a0; }
-  .pulse-dot { width:6px; height:6px; border-radius:50%; background:#40c070; flex-shrink:0; animation:pulse 2s ease-in-out infinite; }
-  @keyframes pulse { 0%,100%{opacity:1;}50%{opacity:0.3;} }
+/* Header */
+header { background:var(–ink); padding:52px 20px 0; position:sticky; top:0; z-index:40; }
+.header-inner { display:flex; align-items:center; justify-content:space-between; padding-bottom:14px; }
+.logo-group { display:flex; align-items:center; gap:10px; }
+.logo-mark { width:36px; height:36px; background:#2a7fff; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; }
+.app-name { font-family:‘Bitter’,serif; font-size:22px; font-weight:700; color:#fff; letter-spacing:-0.3px; }
+.app-sub { font-family:‘IBM Plex Mono’,monospace; font-size:10px; color:#8890a0; letter-spacing:1px; text-transform:uppercase; margin-top:1px; }
+.status-pill { display:flex; align-items:center; gap:5px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); border-radius:20px; padding:5px 10px; font-family:‘IBM Plex Mono’,monospace; font-size:10px; color:#8890a0; }
+.pulse-dot { width:6px; height:6px; border-radius:50%; background:#40c070; flex-shrink:0; animation:pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1;}50%{opacity:0.3;} }
 
-  /* Tabs */
-  .tabs-bar { display:flex; gap:6px; padding:0 0 14px; }
-  .tab { flex:1; padding:9px 8px; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#8890a0; font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:500; letter-spacing:0.5px; text-transform:uppercase; cursor:pointer; transition:all 0.15s; }
-  .tab.active { background:#2a7fff; border-color:#2a7fff; color:#fff; }
+/* Tabs */
+.tabs-bar { display:flex; gap:6px; padding:0 0 14px; }
+.tab { flex:1; padding:9px 8px; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#8890a0; font-family:‘IBM Plex Mono’,monospace; font-size:11px; font-weight:500; letter-spacing:0.5px; text-transform:uppercase; cursor:pointer; transition:all 0.15s; }
+.tab.active { background:#2a7fff; border-color:#2a7fff; color:#fff; }
 
-  /* Legend */
-  .legend-bar { display:flex; margin:14px 12px 0; border-radius:10px; overflow:hidden; border:1px solid var(--border); }
-  .legend-item { flex:1; padding:8px 6px; display:flex; align-items:center; justify-content:center; gap:5px; font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:500; letter-spacing:0.5px; }
-  .legend-item:not(:last-child) { border-right:1px solid var(--border); }
-  .li-safe { background:var(--safe-bg); color:var(--safe); }
-  .li-caution { background:var(--caution-bg); color:var(--caution); }
-  .li-danger { background:var(--danger-bg); color:var(--danger); }
-  .legend-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+/* Legend */
+.legend-bar { display:flex; margin:14px 12px 0; border-radius:10px; overflow:hidden; border:1px solid var(–border); }
+.legend-item { flex:1; padding:8px 6px; display:flex; align-items:center; justify-content:center; gap:5px; font-family:‘IBM Plex Mono’,monospace; font-size:10px; font-weight:500; letter-spacing:0.5px; }
+.legend-item:not(:last-child) { border-right:1px solid var(–border); }
+.li-safe { background:var(–safe-bg); color:var(–safe); }
+.li-caution { background:var(–caution-bg); color:var(–caution); }
+.li-danger { background:var(–danger-bg); color:var(–danger); }
+.legend-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
 
-  /* Toolbar */
-  .toolbar { display:flex; align-items:center; justify-content:space-between; padding:14px 16px 4px; }
-  .section-label { font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:var(--ink-light); }
-  .refresh-btn { display:flex; align-items:center; gap:5px; background:var(--accent-bg); border:1px solid #c0d4f8; border-radius:20px; padding:6px 12px; font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:500; color:var(--accent); cursor:pointer; transition:background 0.15s; }
-  .refresh-btn:active { background:#d0e0fc; }
-  .spin { animation:spin 1s linear infinite; display:inline-block; }
-  @keyframes spin { to{transform:rotate(360deg);} }
+/* Toolbar */
+.toolbar { display:flex; align-items:center; justify-content:space-between; padding:14px 16px 4px; }
+.section-label { font-family:‘IBM Plex Mono’,monospace; font-size:10px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:var(–ink-light); }
+.refresh-btn { display:flex; align-items:center; gap:5px; background:var(–accent-bg); border:1px solid #c0d4f8; border-radius:20px; padding:6px 12px; font-family:‘IBM Plex Mono’,monospace; font-size:10px; font-weight:500; color:var(–accent); cursor:pointer; transition:background 0.15s; }
+.refresh-btn:active { background:#d0e0fc; }
+.spin { animation:spin 1s linear infinite; display:inline-block; }
+@keyframes spin { to{transform:rotate(360deg);} }
 
-  /* Section headers */
-  .section-head { display:flex; align-items:center; justify-content:space-between; padding:16px 16px 8px; }
-  .section-title { font-family:'Bitter',serif; font-size:17px; font-weight:700; color:var(--ink); }
-  .gauge-count { font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-light); background:var(--bg-section); padding:3px 8px; border-radius:10px; }
+/* Section headers */
+.section-head { display:flex; align-items:center; justify-content:space-between; padding:16px 16px 8px; }
+.section-title { font-family:‘Bitter’,serif; font-size:17px; font-weight:700; color:var(–ink); }
+.gauge-count { font-family:‘IBM Plex Mono’,monospace; font-size:11px; color:var(–ink-light); background:var(–bg-section); padding:3px 8px; border-radius:10px; }
 
-  /* River cards */
-  .river-list { padding:0 12px; display:flex; flex-direction:column; gap:10px; }
-  .river-card { background:var(--bg-card); border-radius:14px; border:1px solid var(--border); box-shadow:var(--shadow); overflow:hidden; cursor:pointer; transition:transform 0.15s, box-shadow 0.15s; }
-  .river-card:active { transform:scale(0.985); box-shadow:none; }
-  .card-status-bar { height:5px; }
-  .bar-safe{background:var(--safe);} .bar-caution{background:#f0a820;} .bar-danger{background:var(--danger);} .bar-loading{background:var(--ink-faint);}
-  .card-body { padding:14px 16px 16px; }
+/* River cards */
+.river-list { padding:0 12px; display:flex; flex-direction:column; gap:10px; }
+.river-card { background:var(–bg-card); border-radius:14px; border:1px solid var(–border); box-shadow:var(–shadow); overflow:hidden; cursor:pointer; transition:transform 0.15s, box-shadow 0.15s; }
+.river-card:active { transform:scale(0.985); box-shadow:none; }
+.card-status-bar { height:5px; }
+.bar-safe{background:var(–safe);} .bar-caution{background:#f0a820;} .bar-danger{background:var(–danger);} .bar-loading{background:var(–ink-faint);}
+.card-body { padding:14px 16px 16px; }
 
-  /* Card top row */
-  .card-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; }
-  .river-name { font-family:'Bitter',serif; font-size:17px; font-weight:700; color:var(--ink); line-height:1.2; }
-  .river-location { font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--ink-light); margin-top:3px; }
-  .safety-badge { padding:5px 11px; border-radius:20px; font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:500; letter-spacing:0.5px; text-transform:uppercase; white-space:nowrap; flex-shrink:0; margin-left:8px; border:1px solid; }
-  .badge-safe{background:var(--safe-bg);color:var(--safe);border-color:var(--safe-border);}
-  .badge-caution{background:var(--caution-bg);color:var(--caution);border-color:var(--caution-border);}
-  .badge-danger{background:var(--danger-bg);color:var(--danger);border-color:var(--danger-border);}
-  .badge-loading{background:var(--bg-section);color:var(--ink-light);border-color:var(--border);}
+/* Card top row */
+.card-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; }
+.river-name { font-family:‘Bitter’,serif; font-size:17px; font-weight:700; color:var(–ink); line-height:1.2; }
+.river-location { font-family:‘IBM Plex Mono’,monospace; font-size:10px; color:var(–ink-light); margin-top:3px; }
+.safety-badge { padding:5px 11px; border-radius:20px; font-family:‘IBM Plex Mono’,monospace; font-size:10px; font-weight:500; letter-spacing:0.5px; text-transform:uppercase; white-space:nowrap; flex-shrink:0; margin-left:8px; border:1px solid; }
+.badge-safe{background:var(–safe-bg);color:var(–safe);border-color:var(–safe-border);}
+.badge-caution{background:var(–caution-bg);color:var(–caution);border-color:var(–caution-border);}
+.badge-danger{background:var(–danger-bg);color:var(–danger);border-color:var(–danger-border);}
+.badge-loading{background:var(–bg-section);color:var(–ink-light);border-color:var(–border);}
 
-  /* Metrics row — now 3 columns */
-  .metrics-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:7px; margin-bottom:10px; }
-  .metric-box { background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:9px 10px; }
-  .metric-label { font-family:'IBM Plex Mono',monospace; font-size:9px; font-weight:500; color:var(--ink-light); letter-spacing:1px; text-transform:uppercase; margin-bottom:4px; }
-  .metric-value { font-family:'IBM Plex Mono',monospace; font-size:clamp(15px,4.5vw,19px); font-weight:500; color:var(--ink); line-height:1; display:flex; align-items:baseline; gap:4px; }
-  .trend-arrow { font-size:13px; font-weight:700; }
-  .trend-up { color:var(--danger); }
-  .trend-down { color:var(--safe); }
-  .trend-stable { color:var(--ink-faint); }
-  .metric-unit { font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--ink-light); margin-top:3px; }
-  .temp-cold { color:#2060c0; }
-  .temp-warm { color:#c06020; }
+/* Metrics row — now 3 columns */
+.metrics-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:7px; margin-bottom:10px; }
+.metric-box { background:var(–bg); border:1px solid var(–border); border-radius:10px; padding:9px 10px; }
+.metric-label { font-family:‘IBM Plex Mono’,monospace; font-size:9px; font-weight:500; color:var(–ink-light); letter-spacing:1px; text-transform:uppercase; margin-bottom:4px; }
+.metric-value { font-family:‘IBM Plex Mono’,monospace; font-size:clamp(15px,4.5vw,19px); font-weight:500; color:var(–ink); line-height:1; display:flex; align-items:baseline; gap:4px; }
+.trend-arrow { font-size:13px; font-weight:700; }
+.trend-up { color:var(–danger); }
+.trend-down { color:var(–safe); }
+.trend-stable { color:var(–ink-faint); }
+.metric-unit { font-family:‘IBM Plex Mono’,monospace; font-size:10px; color:var(–ink-light); margin-top:3px; }
+.temp-cold { color:#2060c0; }
+.temp-warm { color:#c06020; }
 
-  /* Sparkline */
-  .chart-wrap { margin-bottom:10px; background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:10px 12px 8px; }
-  .chart-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
-  .chart-label { font-family:'IBM Plex Mono',monospace; font-size:9px; font-weight:500; color:var(--ink-light); letter-spacing:1px; text-transform:uppercase; }
-  .chart-legend { display:flex; align-items:center; gap:10px; }
-  .chart-legend-item { display:flex; align-items:center; gap:4px; font-family:'IBM Plex Mono',monospace; font-size:9px; color:var(--ink-light); }
-  .sparkline-svg { width:100%; display:block; }
-  .chart-date-row { display:flex; justify-content:space-between; margin-top:5px; font-family:'IBM Plex Mono',monospace; font-size:8px; color:var(--ink-faint); }
-  .chart-loading { height:60px; display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--ink-faint); }
+/* Sparkline */
+.chart-wrap { margin-bottom:10px; background:var(–bg); border:1px solid var(–border); border-radius:10px; padding:10px 12px 8px; }
+.chart-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.chart-label { font-family:‘IBM Plex Mono’,monospace; font-size:9px; font-weight:500; color:var(–ink-light); letter-spacing:1px; text-transform:uppercase; }
+.chart-legend { display:flex; align-items:center; gap:10px; }
+.chart-legend-item { display:flex; align-items:center; gap:4px; font-family:‘IBM Plex Mono’,monospace; font-size:9px; color:var(–ink-light); }
+.sparkline-svg { width:100%; display:block; }
+.chart-date-row { display:flex; justify-content:space-between; margin-top:5px; font-family:‘IBM Plex Mono’,monospace; font-size:8px; color:var(–ink-faint); }
+.chart-loading { height:60px; display:flex; align-items:center; justify-content:center; font-family:‘IBM Plex Mono’,monospace; font-size:10px; color:var(–ink-faint); }
 
-  /* Rain forecast bar */
-  .rain-wrap { margin-bottom:10px; background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:10px 12px 8px; }
-  .rain-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
-  .rain-label { font-family:'IBM Plex Mono',monospace; font-size:9px; font-weight:500; color:var(--ink-light); letter-spacing:1px; text-transform:uppercase; }
-  .rain-total-badge { font-family:'IBM Plex Mono',monospace; font-size:9px; padding:2px 7px; border-radius:10px; border:1px solid; }
-  .rain-total-dry { background:#f0f4f0; color:#507050; border-color:#b0d0b0; }
-  .rain-total-light { background:#e8f0fc; color:#2060c0; border-color:#a0c0f0; }
-  .rain-total-heavy { background:#fdecea; color:#c0200c; border-color:#f0a090; }
-  .rain-bars { display:flex; align-items:flex-end; gap:2px; height:40px; }
-  .rain-bar-col { display:flex; flex-direction:column; align-items:center; flex:1; height:100%; justify-content:flex-end; }
-  .rain-bar { width:100%; border-radius:2px 2px 0 0; min-height:1px; transition:height 0.4s ease; }
-  .rain-time-row { display:flex; justify-content:space-between; margin-top:4px; font-family:'IBM Plex Mono',monospace; font-size:8px; color:var(--ink-faint); }
+/* Rain forecast bar */
+.rain-wrap { margin-bottom:10px; background:var(–bg); border:1px solid var(–border); border-radius:10px; padding:10px 12px 8px; }
+.rain-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.rain-label { font-family:‘IBM Plex Mono’,monospace; font-size:9px; font-weight:500; color:var(–ink-light); letter-spacing:1px; text-transform:uppercase; }
+.rain-total-badge { font-family:‘IBM Plex Mono’,monospace; font-size:9px; padding:2px 7px; border-radius:10px; border:1px solid; }
+.rain-total-dry { background:#f0f4f0; color:#507050; border-color:#b0d0b0; }
+.rain-total-light { background:#e8f0fc; color:#2060c0; border-color:#a0c0f0; }
+.rain-total-heavy { background:#fdecea; color:#c0200c; border-color:#f0a090; }
+.rain-bars { display:flex; align-items:flex-end; gap:2px; height:40px; }
+.rain-bar-col { display:flex; flex-direction:column; align-items:center; flex:1; height:100%; justify-content:flex-end; }
+.rain-bar { width:100%; border-radius:2px 2px 0 0; min-height:1px; transition:height 0.4s ease; }
+.rain-time-row { display:flex; justify-content:space-between; margin-top:4px; font-family:‘IBM Plex Mono’,monospace; font-size:8px; color:var(–ink-faint); }
 
-  /* Wading strip */
-  .wading-strip { display:flex; align-items:flex-start; gap:8px; padding:9px 11px; border-radius:8px; border:1px solid; font-size:12px; line-height:1.5; font-weight:500; }
-  .wading-strip.safe{background:var(--safe-bg);border-color:var(--safe-border);color:var(--safe);}
-  .wading-strip.caution{background:var(--caution-bg);border-color:var(--caution-border);color:var(--caution);}
-  .wading-strip.danger{background:var(--danger-bg);border-color:var(--danger-border);color:var(--danger);}
-  .wading-strip.unknown{background:var(--bg-section);border-color:var(--border);color:var(--ink-light);}
-  .wading-icon { font-size:14px; flex-shrink:0; margin-top:1px; }
+/* Wading strip */
+.wading-strip { display:flex; align-items:flex-start; gap:8px; padding:9px 11px; border-radius:8px; border:1px solid; font-size:12px; line-height:1.5; font-weight:500; }
+.wading-strip.safe{background:var(–safe-bg);border-color:var(–safe-border);color:var(–safe);}
+.wading-strip.caution{background:var(–caution-bg);border-color:var(–caution-border);color:var(–caution);}
+.wading-strip.danger{background:var(–danger-bg);border-color:var(–danger-border);color:var(–danger);}
+.wading-strip.unknown{background:var(–bg-section);border-color:var(–border);color:var(–ink-light);}
+.wading-icon { font-size:14px; flex-shrink:0; margin-top:1px; }
 
-  /* Skeleton */
-  .skeleton { background:linear-gradient(90deg,#e8e4dc 25%,#f0ece4 50%,#e8e4dc 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; border-radius:6px; }
-  @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-  .sk-name{height:20px;width:60%;margin-bottom:6px;} .sk-loc{height:11px;width:40%;margin-bottom:14px;} .sk-box{height:52px;border-radius:10px;} .sk-chart{height:80px;border-radius:10px;margin-bottom:10px;} .sk-rain{height:64px;border-radius:10px;margin-bottom:10px;}
+/* Skeleton */
+.skeleton { background:linear-gradient(90deg,#e8e4dc 25%,#f0ece4 50%,#e8e4dc 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; border-radius:6px; }
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.sk-name{height:20px;width:60%;margin-bottom:6px;} .sk-loc{height:11px;width:40%;margin-bottom:14px;} .sk-box{height:52px;border-radius:10px;} .sk-chart{height:80px;border-radius:10px;margin-bottom:10px;} .sk-rain{height:64px;border-radius:10px;margin-bottom:10px;}
 
-  /* Modal */
-  .modal-overlay { position:fixed; inset:0; z-index:100; background:rgba(20,20,18,0.6); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); display:none; align-items:flex-end; }
-  .modal-overlay.open { display:flex; }
-  .modal { width:100%; max-width:430px; margin:0 auto; background:var(--bg-card); border-radius:20px 20px 0 0; padding:16px 20px calc(40px + env(safe-area-inset-bottom)); animation:slide-up 0.28s cubic-bezier(0.34,1.4,0.64,1); max-height:88vh; overflow-y:auto; }
-  @keyframes slide-up{from{transform:translateY(100%)}to{transform:translateY(0)}}
-  .modal-handle { width:36px; height:4px; background:var(--ink-faint); border-radius:4px; margin:0 auto 18px; }
-  .modal-river-name { font-family:'Bitter',serif; font-size:24px; font-weight:700; color:var(--ink); margin-bottom:3px; }
-  .modal-location { font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--ink-light); letter-spacing:0.5px; margin-bottom:18px; }
-  .modal-metrics { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:16px; }
-  .modal-metric { background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:14px; }
-  .modal-metric .metric-value { font-size:22px; }
-  .modal-safety { padding:14px 16px; border-radius:12px; border:1px solid; margin-bottom:14px; }
-  .modal-safety.safe{background:var(--safe-bg);border-color:var(--safe-border);}
-  .modal-safety.caution{background:var(--caution-bg);border-color:var(--caution-border);}
-  .modal-safety.danger{background:var(--danger-bg);border-color:var(--danger-border);}
-  .modal-safety.unknown{background:var(--bg-section);border-color:var(--border);}
-  .modal-safety-title { font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:500; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:5px; }
-  .safe .modal-safety-title{color:var(--safe);} .caution .modal-safety-title{color:var(--caution);} .danger .modal-safety-title{color:var(--danger);} .unknown .modal-safety-title{color:var(--ink-light);}
-  .modal-safety-text { font-size:13px; line-height:1.6; color:var(--ink-mid); }
-  .modal-notes { background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:14px; margin-bottom:12px; }
-  .notes-label { font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:500; letter-spacing:1.5px; text-transform:uppercase; color:var(--ink-light); margin-bottom:6px; }
-  .notes-text { font-size:13px; line-height:1.65; color:var(--ink-mid); }
-  .usgs-link { display:flex; align-items:center; justify-content:space-between; padding:13px 16px; background:var(--accent-bg); border:1px solid #c0d4f8; border-radius:12px; text-decoration:none; color:var(--accent); font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:500; }
+/* Modal */
+.modal-overlay { position:fixed; inset:0; z-index:100; background:rgba(20,20,18,0.6); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); display:none; align-items:flex-end; }
+.modal-overlay.open { display:flex; }
+.modal { width:100%; max-width:430px; margin:0 auto; background:var(–bg-card); border-radius:20px 20px 0 0; padding:16px 20px calc(40px + env(safe-area-inset-bottom)); animation:slide-up 0.28s cubic-bezier(0.34,1.4,0.64,1); max-height:88vh; overflow-y:auto; }
+@keyframes slide-up{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle { width:36px; height:4px; background:var(–ink-faint); border-radius:4px; margin:0 auto 18px; }
+.modal-river-name { font-family:‘Bitter’,serif; font-size:24px; font-weight:700; color:var(–ink); margin-bottom:3px; }
+.modal-location { font-family:‘IBM Plex Mono’,monospace; font-size:10px; color:var(–ink-light); letter-spacing:0.5px; margin-bottom:18px; }
+.modal-metrics { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:16px; }
+.modal-metric { background:var(–bg); border:1px solid var(–border); border-radius:12px; padding:14px; }
+.modal-metric .metric-value { font-size:22px; }
+.modal-safety { padding:14px 16px; border-radius:12px; border:1px solid; margin-bottom:14px; }
+.modal-safety.safe{background:var(–safe-bg);border-color:var(–safe-border);}
+.modal-safety.caution{background:var(–caution-bg);border-color:var(–caution-border);}
+.modal-safety.danger{background:var(–danger-bg);border-color:var(–danger-border);}
+.modal-safety.unknown{background:var(–bg-section);border-color:var(–border);}
+.modal-safety-title { font-family:‘IBM Plex Mono’,monospace; font-size:10px; font-weight:500; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:5px; }
+.safe .modal-safety-title{color:var(–safe);} .caution .modal-safety-title{color:var(–caution);} .danger .modal-safety-title{color:var(–danger);} .unknown .modal-safety-title{color:var(–ink-light);}
+.modal-safety-text { font-size:13px; line-height:1.6; color:var(–ink-mid); }
+.modal-notes { background:var(–bg); border:1px solid var(–border); border-radius:12px; padding:14px; margin-bottom:12px; }
+.notes-label { font-family:‘IBM Plex Mono’,monospace; font-size:10px; font-weight:500; letter-spacing:1.5px; text-transform:uppercase; color:var(–ink-light); margin-bottom:6px; }
+.notes-text { font-size:13px; line-height:1.65; color:var(–ink-mid); }
+.usgs-link { display:flex; align-items:center; justify-content:space-between; padding:13px 16px; background:var(–accent-bg); border:1px solid #c0d4f8; border-radius:12px; text-decoration:none; color:var(–accent); font-family:‘IBM Plex Mono’,monospace; font-size:11px; font-weight:500; }
 
-  /* About */
-  .about-wrap { padding:16px; }
-  .about-card { background:var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:18px; margin-bottom:12px; box-shadow:var(--shadow); }
-  .about-title { font-family:'Bitter',serif; font-size:16px; font-weight:700; color:var(--ink); margin-bottom:10px; }
-  .about-body { font-size:13px; line-height:1.7; color:var(--ink-mid); }
-  .thresh-table { width:100%; border-collapse:collapse; margin-top:10px; font-family:'IBM Plex Mono',monospace; font-size:11px; }
-  .thresh-table th { text-align:left; padding:7px 8px; color:var(--ink-light); font-size:9px; letter-spacing:1px; text-transform:uppercase; border-bottom:2px solid var(--border); }
-  .thresh-table td { padding:8px; color:var(--ink-mid); border-bottom:1px solid var(--border); }
-  .thresh-table tr:last-child td { border-bottom:none; }
-  td.t-safe{color:var(--safe);font-weight:500;} td.t-caution{color:var(--caution);font-weight:500;} td.t-danger{color:var(--danger);font-weight:500;}
+/* About */
+.about-wrap { padding:16px; }
+.about-card { background:var(–bg-card); border:1px solid var(–border); border-radius:14px; padding:18px; margin-bottom:12px; box-shadow:var(–shadow); }
+.about-title { font-family:‘Bitter’,serif; font-size:16px; font-weight:700; color:var(–ink); margin-bottom:10px; }
+.about-body { font-size:13px; line-height:1.7; color:var(–ink-mid); }
+.thresh-table { width:100%; border-collapse:collapse; margin-top:10px; font-family:‘IBM Plex Mono’,monospace; font-size:11px; }
+.thresh-table th { text-align:left; padding:7px 8px; color:var(–ink-light); font-size:9px; letter-spacing:1px; text-transform:uppercase; border-bottom:2px solid var(–border); }
+.thresh-table td { padding:8px; color:var(–ink-mid); border-bottom:1px solid var(–border); }
+.thresh-table tr:last-child td { border-bottom:none; }
+td.t-safe{color:var(–safe);font-weight:500;} td.t-caution{color:var(–caution);font-weight:500;} td.t-danger{color:var(–danger);font-weight:500;}
 
-  /* Bottom nav */
-  .bottom-nav { position:fixed; bottom:0; left:0; right:0; z-index:50; max-width:430px; margin:0 auto; background:var(--bg-card); border-top:1px solid var(--border); padding:10px 20px calc(10px + env(safe-area-inset-bottom)); display:flex; justify-content:space-around; box-shadow:0 -4px 20px rgba(0,0,0,0.08); }
-  .nav-btn { display:flex; flex-direction:column; align-items:center; gap:3px; background:none; border:none; font-family:'IBM Plex Mono',monospace; font-size:9px; letter-spacing:1px; text-transform:uppercase; color:var(--ink-light); cursor:pointer; padding:6px 20px; transition:color 0.15s; }
-  .nav-btn.active { color:var(--accent); }
-  .nav-icon { font-size:20px; }
-  .view{display:none;}.view.active{display:block;}
-  /* Edit mode & remove button */
-  .toolbar-right{display:flex;gap:8px;align-items:center;}
-  .edit-btn{display:flex;align-items:center;gap:5px;background:var(--bg-section);border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;color:var(--ink-light);cursor:pointer;transition:all 0.15s;}
-  .edit-btn.active{background:#fff0e0;border-color:#f0c060;color:#a05c00;}
-  .river-card{position:relative;}
+/* Bottom nav */
+.bottom-nav { position:fixed; bottom:0; left:0; right:0; z-index:50; max-width:430px; margin:0 auto; background:var(–bg-card); border-top:1px solid var(–border); padding:10px 20px calc(10px + env(safe-area-inset-bottom)); display:flex; justify-content:space-around; box-shadow:0 -4px 20px rgba(0,0,0,0.08); }
+.nav-btn { display:flex; flex-direction:column; align-items:center; gap:3px; background:none; border:none; font-family:‘IBM Plex Mono’,monospace; font-size:9px; letter-spacing:1px; text-transform:uppercase; color:var(–ink-light); cursor:pointer; padding:6px 20px; transition:color 0.15s; }
+.nav-btn.active { color:var(–accent); }
+.nav-icon { font-size:20px; }
+.view{display:none;}.view.active{display:block;}
+/* Hatch drawer */
+.hatch-drawer-overlay{position:fixed;inset:0;z-index:300;background:rgba(20,20,18,0.65);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:none;align-items:flex-end;}
+.hatch-drawer-overlay.open{display:flex;}
+.hatch-drawer{width:100%;max-width:430px;margin:0 auto;background:var(–bg-card);border-radius:20px 20px 0 0;padding:16px 0 calc(24px + env(safe-area-inset-bottom));animation:slide-up 0.28s cubic-bezier(0.34,1.4,0.64,1);max-height:90vh;display:flex;flex-direction:column;}
+.hatch-drawer-head{display:flex;align-items:flex-start;justify-content:space-between;padding:0 20px;margin-bottom:4px;flex-shrink:0;}
+.hatch-drawer-title{font-family:‘Bitter’,serif;font-size:19px;font-weight:700;color:var(–ink);}
+.hatch-drawer-sub{font-family:‘IBM Plex Mono’,monospace;font-size:10px;color:var(–ink-light);margin-top:3px;letter-spacing:0.3px;}
+.hatch-close-btn{background:var(–bg-section);border:1px solid var(–border);border-radius:20px;padding:6px 14px;font-family:‘IBM Plex Mono’,monospace;font-size:10px;color:var(–ink-light);cursor:pointer;flex-shrink:0;margin-left:12px;margin-top:2px;}
+.hatch-scroll{overflow-y:auto;flex:1;padding:12px 12px 0;}
 
-  /* Add rivers drawer */
-  .drawer-overlay{position:fixed;inset:0;z-index:200;background:rgba(20,20,18,0.6);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:none;align-items:flex-end;}
-  .drawer-overlay.open{display:flex;}
-  .drawer{width:100%;max-width:430px;margin:0 auto;background:var(--bg-card);border-radius:20px 20px 0 0;padding:16px 0 calc(20px + env(safe-area-inset-bottom));animation:slide-up 0.28s cubic-bezier(0.34,1.4,0.64,1);max-height:82vh;display:flex;flex-direction:column;}
-  .drawer-handle{width:36px;height:4px;background:var(--ink-faint);border-radius:4px;margin:0 auto 14px;flex-shrink:0;}
-  .drawer-title{font-family:'Bitter',serif;font-size:18px;font-weight:700;color:var(--ink);padding:0 20px;margin-bottom:10px;flex-shrink:0;}
-  .drawer-search{margin:0 12px 8px;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:10px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--ink);outline:none;flex-shrink:0;}
-  .drawer-search:focus{border-color:var(--accent);}
-  .drawer-tabs{display:flex;gap:6px;padding:0 12px 8px;flex-shrink:0;}
-  .drawer-tab{flex:1;padding:7px 6px;background:var(--bg-section);border:1px solid var(--border);border-radius:8px;color:var(--ink-light);font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;text-transform:uppercase;cursor:pointer;transition:all 0.15s;}
-  .drawer-tab.active{background:var(--accent-bg);border-color:#c0d4f8;color:var(--accent);}
-  .drawer-list{overflow-y:auto;flex:1;padding:0 12px;}
-  .drawer-item{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;}
-  .drawer-item-name{font-family:'Bitter',serif;font-size:15px;font-weight:600;color:var(--ink);}
-  .drawer-item-loc{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-light);margin-top:2px;}
-  .drawer-add-btn{padding:6px 14px;border-radius:20px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;cursor:pointer;white-space:nowrap;border:1px solid;transition:all 0.15s;flex-shrink:0;margin-left:10px;}
-  .btn-add{background:var(--accent-bg);border-color:#c0d4f8;color:var(--accent);}
-  .btn-add:active{background:#d0e0fc;}
-  .btn-added{background:var(--safe-bg);border-color:var(--safe-border);color:var(--safe);cursor:default;}
-  .drawer-empty{text-align:center;padding:30px 20px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-faint);}
-  .drawer-section-label{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--ink-light);padding:4px 2px 8px;margin-top:2px;}
-  .drawer-item-active{border-color:var(--safe-border);background:var(--safe-bg);}
-  .drawer-item-active .drawer-item-name{color:var(--safe);}
-  .drawer-item-active .drawer-item-loc{color:#6aaa88;}
-  .btn-remove{background:#fdecea;border-color:var(--danger-border);color:var(--danger);}
-  .btn-remove:active{background:#fad4d0;}
+/* Active hatch card */
+.hatch-section-label{font-family:‘IBM Plex Mono’,monospace;font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(–ink-light);padding:6px 4px 8px;}
+.hatch-card{background:var(–bg);border:1px solid var(–border);border-radius:12px;padding:13px 14px;margin-bottom:8px;}
+.hatch-card.active-hatch{border-color:#a8dfc0;background:var(–safe-bg);}
+.hatch-card.upcoming-hatch{border-color:#f0c060;background:var(–caution-bg);}
+.hatch-card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;}
+.hatch-name{font-family:‘Bitter’,serif;font-size:15px;font-weight:700;color:var(–ink);}
+.hatch-sci{font-family:‘IBM Plex Mono’,monospace;font-size:9px;color:var(–ink-light);margin-top:2px;}
+.hatch-time-badge{font-family:‘IBM Plex Mono’,monospace;font-size:9px;padding:3px 8px;border-radius:10px;background:rgba(32,96,192,0.1);color:var(–accent);border:1px solid rgba(32,96,192,0.2);white-space:nowrap;flex-shrink:0;margin-left:8px;}
+.hatch-flies{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;}
+.hatch-fly-box{background:var(–bg-card);border:1px solid var(–border);border-radius:8px;padding:8px 10px;}
+.hatch-fly-label{font-family:‘IBM Plex Mono’,monospace;font-size:8px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(–ink-light);margin-bottom:3px;}
+.hatch-fly-value{font-size:12px;color:var(–ink-mid);line-height:1.4;}
+.hatch-size{font-family:‘IBM Plex Mono’,monospace;font-size:10px;color:var(–accent);font-weight:500;}
+.hatch-note{font-size:11px;color:var(–ink-light);line-height:1.5;border-top:1px solid var(–border);padding-top:7px;margin-top:2px;}
+.hatch-temp-chip{display:inline-flex;align-items:center;gap:4px;font-family:‘IBM Plex Mono’,monospace;font-size:9px;color:var(–ink-light);background:var(–bg-section);border:1px solid var(–border);border-radius:10px;padding:2px 7px;margin-top:6px;}
+
+/* Hatch button on card */
+.hatch-btn{display:flex;align-items:center;gap:5px;background:#fff8e8;border:1px solid #f0d060;border-radius:8px;padding:8px 12px;font-family:‘IBM Plex Mono’,monospace;font-size:10px;font-weight:500;color:#806000;cursor:pointer;width:100%;margin-top:8px;transition:background 0.15s;text-align:left;}
+.hatch-btn:active{background:#f0e8c0;}
+.hatch-btn-count{background:#f0c020;color:#5a4000;border-radius:10px;padding:1px 7px;font-size:9px;margin-left:auto;}
+.hatch-empty{text-align:center;padding:24px 16px;font-family:‘IBM Plex Mono’,monospace;font-size:11px;color:var(–ink-faint);}
+
+/* Edit mode & remove button */
+.toolbar-right{display:flex;gap:8px;align-items:center;}
+.edit-btn{display:flex;align-items:center;gap:5px;background:var(–bg-section);border:1px solid var(–border);border-radius:20px;padding:6px 12px;font-family:‘IBM Plex Mono’,monospace;font-size:10px;font-weight:500;color:var(–ink-light);cursor:pointer;transition:all 0.15s;}
+.edit-btn.active{background:#fff0e0;border-color:#f0c060;color:#a05c00;}
+.river-card{position:relative;}
+
+/* Add rivers drawer */
+.drawer-overlay{position:fixed;inset:0;z-index:200;background:rgba(20,20,18,0.6);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:none;align-items:flex-end;}
+.drawer-overlay.open{display:flex;}
+.drawer{width:100%;max-width:430px;margin:0 auto;background:var(–bg-card);border-radius:20px 20px 0 0;padding:16px 0 calc(20px + env(safe-area-inset-bottom));animation:slide-up 0.28s cubic-bezier(0.34,1.4,0.64,1);max-height:82vh;display:flex;flex-direction:column;}
+.drawer-handle{width:36px;height:4px;background:var(–ink-faint);border-radius:4px;margin:0 auto 14px;flex-shrink:0;}
+.drawer-title{font-family:‘Bitter’,serif;font-size:18px;font-weight:700;color:var(–ink);padding:0 20px;margin-bottom:10px;flex-shrink:0;}
+.drawer-search{margin:0 12px 8px;padding:10px 14px;background:var(–bg);border:1px solid var(–border);border-radius:10px;font-family:‘IBM Plex Mono’,monospace;font-size:13px;color:var(–ink);outline:none;flex-shrink:0;}
+.drawer-search:focus{border-color:var(–accent);}
+.drawer-tabs{display:flex;gap:6px;padding:0 12px 8px;flex-shrink:0;}
+.drawer-tab{flex:1;padding:7px 6px;background:var(–bg-section);border:1px solid var(–border);border-radius:8px;color:var(–ink-light);font-family:‘IBM Plex Mono’,monospace;font-size:10px;font-weight:500;text-transform:uppercase;cursor:pointer;transition:all 0.15s;}
+.drawer-tab.active{background:var(–accent-bg);border-color:#c0d4f8;color:var(–accent);}
+.drawer-list{overflow-y:auto;flex:1;padding:0 12px;}
+.drawer-item{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:var(–bg-card);border:1px solid var(–border);border-radius:12px;margin-bottom:8px;}
+.drawer-item-name{font-family:‘Bitter’,serif;font-size:15px;font-weight:600;color:var(–ink);}
+.drawer-item-loc{font-family:‘IBM Plex Mono’,monospace;font-size:10px;color:var(–ink-light);margin-top:2px;}
+.drawer-add-btn{padding:6px 14px;border-radius:20px;font-family:‘IBM Plex Mono’,monospace;font-size:10px;font-weight:500;cursor:pointer;white-space:nowrap;border:1px solid;transition:all 0.15s;flex-shrink:0;margin-left:10px;}
+.btn-add{background:var(–accent-bg);border-color:#c0d4f8;color:var(–accent);}
+.btn-add:active{background:#d0e0fc;}
+.btn-added{background:var(–safe-bg);border-color:var(–safe-border);color:var(–safe);cursor:default;}
+.drawer-empty{text-align:center;padding:30px 20px;font-family:‘IBM Plex Mono’,monospace;font-size:12px;color:var(–ink-faint);}
+.drawer-section-label{font-family:‘IBM Plex Mono’,monospace;font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(–ink-light);padding:4px 2px 8px;margin-top:2px;}
+.drawer-item-active{border-color:var(–safe-border);background:var(–safe-bg);}
+.drawer-item-active .drawer-item-name{color:var(–safe);}
+.drawer-item-active .drawer-item-loc{color:#6aaa88;}
+.btn-remove{background:#fdecea;border-color:var(–danger-border);color:var(–danger);}
+.btn-remove:active{background:#fad4d0;}
 
 </style>
 </head>
@@ -209,7 +243,7 @@
       <div class="logo-group">
         <div class="logo-mark">〜</div>
         <div>
-          <div class="app-name">Current <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:400;color:#5870a0;letter-spacing:0.5px;vertical-align:middle;">v5</span></div>
+          <div class="app-name">Current <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:400;color:#5870a0;letter-spacing:0.5px;vertical-align:middle;">v6</span></div>
           <div class="app-sub">PA &amp; NY River Monitor</div>
         </div>
       </div>
@@ -293,8 +327,24 @@
   <div class="modal"><div class="modal-handle"></div><div id="modalBody"></div></div>
 </div>
 
+<!-- Hatch drawer -->
+
+<div class="hatch-drawer-overlay" id="hatchDrawerOverlay" onclick="closeHatchDrawer(event)">
+  <div class="hatch-drawer">
+    <div class="drawer-handle"></div>
+    <div class="hatch-drawer-head">
+      <div>
+        <div class="hatch-drawer-title" id="hatchDrawerTitle">Hatches</div>
+        <div class="hatch-drawer-sub" id="hatchDrawerSub"></div>
+      </div>
+      <button class="hatch-close-btn" onclick="document.getElementById('hatchDrawerOverlay').classList.remove('open')">✕ Close</button>
+    </div>
+    <div class="hatch-scroll" id="hatchDrawerContent"></div>
+  </div>
+</div>
 
 <!-- Add rivers drawer -->
+
 <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer(event)">
   <div class="drawer">
     <div class="drawer-handle"></div>
@@ -320,7 +370,7 @@ const STREAM_LIBRARY = [
   { id:'01480000', name:'Brandywine Creek',           location:'Chadds Ford, PA',        state:'PA', safeThreshold:300,  lat:39.862,lon:-75.591, notes:'Classic smallmouth bass fly water. Many access points in Chester County.' },
   { id:'01491000', name:'Brandywine Creek (W Branch)',location:'Honey Brook, PA',        state:'PA', safeThreshold:200,  lat:40.057,lon:-75.914, notes:'Excellent limestone creek with wild brook trout.' },
   { id:'01471000', name:'Tulpehocken Creek',          location:'Near Reading, PA',       state:'PA', safeThreshold:200,  lat:40.336,lon:-76.017, notes:"Class A wild trout below Blue Marsh Dam. Cold tailwater year-round." },
-  { id:'01442500', name:'Brodhead Creek',             location:'Minisink Hills, PA',     state:'PA', safeThreshold:300,  lat:40.998,lon:-75.143, notes:'Pocono trout stream. Rises fast after rain — watch levels closely.' },
+  { id:'01442500', name:'Brodhead Creek',             location:'Minisink Hills, PA',     state:'PA', safeThreshold:300,  lat:40.998,lon:-75.143, notes:'Pocono trout stream. Rises fast after rain  -  watch levels closely.' },
   { id:'01439500', name:'Delaware River',             location:'Callicoon, NY/PA border',state:'PA', safeThreshold:1200, lat:41.762,lon:-75.059, notes:'Upper Delaware. Premier trout and shad. Check both PA and NY regs.' },
   { id:'01473000', name:'Wissahickon Creek',          location:'Wissahickon Valley, PA', state:'PA', safeThreshold:150,  lat:40.072,lon:-75.217, notes:'Urban trout stream in Philadelphia. Stocked seasonally.' },
   { id:'01554000', name:'Spring Creek',               location:'Bellefonte, PA',         state:'PA', safeThreshold:200,  lat:40.913,lon:-77.779, notes:'World-class limestone spring creek. Often called the best trout stream in PA.' },
@@ -344,6 +394,162 @@ const STREAM_LIBRARY = [
   { id:'01357500', name:'Catskill Creek',             location:'Catskill, NY',           state:'NY', safeThreshold:300,  lat:42.213,lon:-73.863, notes:'Catskill tributary of the Hudson. Wild trout in upper reaches.' },
   { id:'01423000', name:'Neversink River',            location:'Godeffroy, NY',          state:'NY', safeThreshold:350,  lat:41.439,lon:-74.599, notes:'Famous Catskill trout stream. Wild browns and rainbows. Stunning Neversink Gorge.' },
 ];
+
+
+// ── Hatch database ────────────────────────────────────────────────────────────
+// Stream profiles: limestone | freestone_pa | delaware | catskill
+// Each hatch: { name, sci, ms, me, ds, de, time, tempMin, dry, nymph, size, note }
+// ms/me = month start/end (1-12), ds/de = day start/end within month
+// time: 'morning' | 'afternoon' | 'evening' | 'dusk' | 'all' | 'night'
+// tempMin = water temp in  FF that triggers emergence
+
+const HATCH_DB = {
+
+  // ── PA Limestone / Spring Creek / Tailwater ──────────────────────────────
+  // Tulpehocken, Spring Creek, Brandywine W. Branch, Little Lehigh
+  limestone: [
+    { name:'Midge',          sci:'Chironomidae',         ms:1,  me:12, ds:1,  de:31, time:'morning',   tempMin:34,  dry:'Griffith's Gnat, CDC Midge',      nymph:'Zebra Midge, Mercury Midge',      size:'#22-26', note:'Year-round staple. Most effective on flat, slow water in winter and early spring.' },
+    { name:'Blue-Winged Olive (Early)', sci:'Baetis tricaudatus', ms:3, me:5, ds:15, de:31, time:'afternoon', tempMin:42, dry:'Parachute BWO, Sparkle Dun',        nymph:'Pheasant Tail, RS2',              size:'#18-22', note:'Thrives on overcast, drizzly days. Often the first real dry fly hatch of the year on limestone creeks.' },
+    { name:'Quill Gordon',   sci:'Epeorus pleuralis',    ms:4,  me:4,  ds:1,  de:20, time:'afternoon', tempMin:46,  dry:'Quill Gordon, Adams',              nymph:'Hare's Ear, Pheasant Tail',      size:'#14',    note:'First major mayfly of spring. Hatches 1-2 weeks earlier on limestone than freestone.' },
+    { name:'Hendrickson',    sci:'Ephemerella subvaria', ms:4,  me:5,  ds:5,  de:15, time:'afternoon', tempMin:48,  dry:'Hendrickson, Red Quill',            nymph:'Hare's Ear, Soft Hackle',        size:'#12-14', note:'One of the most reliable early-season hatches. Fish the dun in afternoon, the spinner at dusk.' },
+    { name:'Grannom Caddis', sci:'Brachycentrus',        ms:4,  me:5,  ds:1,  de:20, time:'afternoon', tempMin:46,  dry:'Elk Hair Caddis, X-Caddis',        nymph:'Caddis Pupa, Green Rock Worm',    size:'#14-16', note:'Early black/dark caddis. Swarms of egg-laying females at surface create explosive feeding.' },
+    { name:'March Brown',    sci:'Maccaffertium vicarium',ms:5, me:6,  ds:1,  de:15, time:'afternoon', tempMin:52,  dry:'March Brown, American March Brown', nymph:'March Brown Nymph, Hare's Ear',  size:'#10-12', note:'Big bug, aggressive rises. More reliable on freestone sections. Fish the afternoon windows.' },
+    { name:'Sulphur',        sci:'Ephemerella dorothea', ms:5,  me:7,  ds:10, de:31, time:'dusk',      tempMin:55,  dry:'Sulphur Sparkle Dun, Parachute Sulphur, CDC Emerger', nymph:'Sulphur Nymph, Beadhead Soft Hackle', size:'#16-18', note:'PA's most reliable and longest-running evening hatch. Fires around 7pm. Trout get very selective  -  exact size and drag-free drift matter.' },
+    { name:'Green Drake',    sci:'Ephemera guttulata',   ms:5,  me:6,  ds:20, de:15, time:'dusk',      tempMin:55,  dry:'Green Drake Comparadun, Coffin Fly Spinner', nymph:'Drake Nymph, Wiggle Nymph',  size:'#8-10',  note:'The signature PA hatch. Large creamy duns at dusk bring up big browns. Switch to Coffin Fly spinner as darkness falls. Arrives earlier on limestone than freestone.' },
+    { name:'Light Cahill',   sci:'Stenacron interpunctatum', ms:6, me:8, ds:1, de:31, time:'evening', tempMin:58,  dry:'Light Cahill, Comparadun',         nymph:'Hare's Ear, Soft Hackle',        size:'#14-16', note:'Creamy-yellow dun. Consistent summer evening hatch, often overlooked during sulphur season.' },
+    { name:'Slate Drake (Iso)',sci:'Isonychia bicolor',  ms:6,  me:10, ds:1,  de:31, time:'evening',   tempMin:58,  dry:'Slate Drake, Dun Variant, Iso Dun', nymph:'Isonychia Nymph',                 size:'#10-12', note:'Strong-swimming nymph triggers aggressive subsurface takes. Dun and spinner fish well at dusk into fall.' },
+    { name:'Trico',          sci:'Tricorythodes sp.',    ms:7,  me:9,  ds:1,  de:30, time:'morning',   tempMin:60,  dry:'Trico Spinner, CDC Trico',         nymph:'Trico Nymph',                     size:'#22-26', note:'Early morning spinner fall  -  often over by 9am. Requires 6X tippet, slow approach, and targeting individual risers. Technical fishing at its finest.' },
+    { name:'White Fly',      sci:'Ephoron leukon',       ms:8,  me:9,  ds:10, de:10, time:'night',     tempMin:65,  dry:'White Wulff, White Elk Hair',      nymph:'White Soft Hackle',               size:'#12-14', note:'Late summer spectacle. Massive evening/night emergence  -  air can appear to snow with them. Short, intense feeding window. Bring a headlamp.' },
+    { name:'Autumn Caddis',  sci:'Neophylax sp.',        ms:9,  me:11, ds:1,  de:30, time:'afternoon', tempMin:48,  dry:'Elk Hair Caddis, Orange Stimulator',nymph:'Caddis Pupa, October Caddis',     size:'#12-14', note:'Orange-bodied fall caddis. Great attractor pattern on overcast fall afternoons.' },
+    { name:'Blue-Winged Olive (Fall)',sci:'Baetis sp.',  ms:9,  me:11, ds:1,  de:30, time:'afternoon', tempMin:44,  dry:'Parachute BWO, Comparadun',        nymph:'Pheasant Tail, RS2',              size:'#18-22', note:'Best hatch of fall on overcast days. On tailwaters like Tulpehocken, can fish through winter.' },
+    { name:'Terrestrials',   sci:'Ants/Beetles/Hoppers', ms:6,  me:9,  ds:15, de:30, time:'afternoon', tempMin:60,  dry:'Ant, Beetle, Hopper, Chernobyl',   nymph:'None  -  fish surface only',        size:'#10-18', note:'Summer staple when no hatch is visible. Fish to banks and structure. Foam beetles and ants are deadly on flat limestone water.' },
+  ],
+
+  // ── PA Freestone / Pocono streams ────────────────────────────────────────
+  // Brodhead Creek, Wissahickon, Ridley Creek, Lehigh, Schuylkill
+  freestone_pa: [
+    { name:'Midge',          sci:'Chironomidae',         ms:1,  me:12, ds:1,  de:31, time:'morning',   tempMin:34,  dry:'Griffith's Gnat',                 nymph:'Zebra Midge, Brassie',            size:'#22-26', note:'Year-round. Best on winter and early spring days with no other hatch activity.' },
+    { name:'Early Black Stonefly', sci:'Allocapnia sp.', ms:2,  me:4,  ds:1,  de:15, time:'afternoon', tempMin:38,  dry:'Black Elk Hair, Black Stimulator',  nymph:'Black Stonefly Nymph',            size:'#16-18', note:'First hatch of the year on freestone streams. Fish before other hatches begin.' },
+    { name:'Blue-Winged Olive',sci:'Baetis tricaudatus', ms:3,  me:5,  ds:15, de:31, time:'afternoon', tempMin:42,  dry:'Parachute BWO, Sparkle Dun',        nymph:'Pheasant Tail, RS2',              size:'#18-20', note:'Best on overcast days. Arrives 1-2 weeks later on freestone than limestone.' },
+    { name:'Quill Gordon',   sci:'Epeorus pleuralis',    ms:4,  me:4,  ds:10, de:30, time:'afternoon', tempMin:46,  dry:'Quill Gordon, Catskill Quill Gordon',nymph:'Hare's Ear Nymph',              size:'#14',    note:'Classic early-season dry fly hatch in pocket water. Watch for rises in calmer runs.' },
+    { name:'Hendrickson',    sci:'Ephemerella subvaria', ms:4,  me:5,  ds:15, de:20, time:'afternoon', tempMin:48,  dry:'Hendrickson, Adams',                nymph:'Hare's Ear, Soft Hackle',        size:'#12-14', note:'Mid-afternoon emergence. Later timing than limestone streams  -  wait for warmer days.' },
+    { name:'Grannom Caddis', sci:'Brachycentrus',        ms:4,  me:5,  ds:10, de:31, time:'afternoon', tempMin:46,  dry:'Elk Hair Caddis, X-Caddis',        nymph:'Green Rock Worm, Caddis Pupa',    size:'#14-16', note:'Black/dark caddis swarms. Can be overwhelming. Try a size 16 Elk Hair and let it swing at the end of the drift.' },
+    { name:'March Brown',    sci:'Maccaffertium vicarium',ms:5, me:6,  ds:1,  de:15, time:'afternoon', tempMin:52,  dry:'March Brown, American March Brown', nymph:'March Brown Nymph',               size:'#10-12', note:'Big, visible duns. Freestone streams often produce excellent March Brown hatches in pocket water.' },
+    { name:'Sulphur',        sci:'Ephemerella dorothea', ms:5,  me:7,  ds:20, de:31, time:'dusk',      tempMin:56,  dry:'Parachute Sulphur, CDC Emerger',    nymph:'Sulphur Nymph',                   size:'#16-18', note:'Evening hatch. Starts a week or two later than limestone streams. Look for rises in tail-outs after 7pm.' },
+    { name:'Green Drake',    sci:'Ephemera guttulata',   ms:5,  me:6,  ds:25, de:20, time:'dusk',      tempMin:55,  dry:'Green Drake Comparadun, Coffin Fly',nymph:'Drake Wiggle Nymph',              size:'#8-10',  note:'Green Drakes on freestone arrive after limestone  -  often early June. Brodhead can have a good hatch. Unpredictable timing.' },
+    { name:'Yellow Sally Stonefly',sci:'Isoperla sp.',   ms:5,  me:7,  ds:15, de:31, time:'afternoon', tempMin:56,  dry:'Yellow Stimulator, Yellow Sally',   nymph:'Yellow Stonefly Nymph',           size:'#14-16', note:'Small yellow stonefly common on faster freestone streams. Fish in and around riffle water.' },
+    { name:'Light Cahill',   sci:'Stenacron interpunctatum',ms:6,me:8, ds:1,  de:31, time:'evening',   tempMin:58,  dry:'Light Cahill, Comparadun',         nymph:'Hare's Ear',                     size:'#14-16', note:'Reliable summer evening hatch. Often the go-to pattern when sulphurs taper off.' },
+    { name:'Slate Drake (Iso)',sci:'Isonychia bicolor',  ms:6,  me:10, ds:1,  de:31, time:'evening',   tempMin:58,  dry:'Slate Drake, Iso Dun',              nymph:'Isonychia Nymph, Soft Hackle',    size:'#10-12', note:'Hatches on freestone from mid-summer into fall. Strong swimmer  -  nymph fished in the swing is effective.' },
+    { name:'Terrestrials',   sci:'Ants/Beetles/Hoppers', ms:6,  me:9,  ds:15, de:30, time:'afternoon', tempMin:60,  dry:'Dave's Hopper, Foam Beetle, Ant',  nymph:'None',                            size:'#10-18', note:'Summer banker when no hatch is on. Target undercut banks and overhanging vegetation.' },
+    { name:'Trico',          sci:'Tricorythodes sp.',    ms:7,  me:9,  ds:1,  de:30, time:'morning',   tempMin:58,  dry:'Trico Spinner, Parachute Trico',    nymph:'Trico Nymph',                     size:'#22-24', note:'Morning spinner falls on freestone flat water. Less technical than limestone but requires small flies and fine tippet.' },
+    { name:'Autumn Caddis',  sci:'Neophylax sp.',        ms:9,  me:11, ds:1,  de:30, time:'afternoon', tempMin:46,  dry:'Elk Hair Caddis, Orange Stimulator',nymph:'Caddis Pupa',                     size:'#12-14', note:'October orange  -  great fall attractor. Fish in and around faster water.' },
+    { name:'Blue-Winged Olive (Fall)',sci:'Baetis sp.',  ms:9,  me:11, ds:1,  de:30, time:'afternoon', tempMin:44,  dry:'Parachute BWO, Thorax BWO',        nymph:'Pheasant Tail',                   size:'#18-20', note:'Best on gray, drizzly fall days. Often the last consistent dry fly hatch of the season.' },
+  ],
+
+  // ── Upper Delaware system ─────────────────────────────────────────────────
+  // Delaware River, W. Branch Delaware, E. Branch Delaware
+  delaware: [
+    { name:'Midge',          sci:'Chironomidae',         ms:1,  me:12, ds:1,  de:31, time:'morning',   tempMin:34,  dry:'Griffith's Gnat, CDC Midge',      nymph:'Zebra Midge',                     size:'#22-26', note:'Year-round on the tailwater sections. West Branch midges fish well in winter.' },
+    { name:'Little Black Caddis',sci:'Chimarra sp.',     ms:4,  me:4,  ds:1,  de:30, time:'afternoon', tempMin:44,  dry:'Black Elk Hair Caddis',             nymph:'Black Caddis Pupa',               size:'#16-18', note:'First caddis of the year. Important early spring hatch on all Delaware branches.' },
+    { name:'Blue-Winged Olive',sci:'Baetis tricaudatus', ms:4,  me:5,  ds:1,  de:31, time:'afternoon', tempMin:44,  dry:'Parachute BWO, Sparkle Dun',        nymph:'Pheasant Tail, RS2',              size:'#18-22', note:'Key early hatch. West Branch fish see a lot of pressure  -  fish with fine tippet and match size carefully.' },
+    { name:'Quill Gordon',   sci:'Epeorus pleuralis',    ms:4,  me:5,  ds:15, de:20, time:'afternoon', tempMin:46,  dry:'Quill Gordon, Traditional Catskill QG', nymph:'Hare's Ear',                size:'#14',    note:'Classic first mayfly. Mid-April on Delaware system. Fish in faster runs and riffles.' },
+    { name:'Hendrickson',    sci:'Ephemerella subvaria', ms:4,  me:5,  ds:15, de:15, time:'afternoon', tempMin:48,  dry:'Hendrickson, Red Quill',            nymph:'Hare's Ear, Soft Hackle',        size:'#12-14', note:'Reliable mid-afternoon hatch. Upper Delaware Hendricksons bring up large wild brown trout. Fish the Red Quill spinner in evenings.' },
+    { name:'Apple Caddis',   sci:'Rhyacophila sp.',      ms:4,  me:5,  ds:15, de:31, time:'afternoon', tempMin:48,  dry:'Elk Hair Caddis (olive/green)',     nymph:'Green Rhyacophila Larva',         size:'#14-16', note:'Green free-living caddis common on Delaware system in spring. Fish the larva dead-drift near the bottom.' },
+    { name:'March Brown / Grey Fox',sci:'Maccaffertium vicarium',ms:5,me:6,ds:1,de:15,time:'afternoon',tempMin:52, dry:'March Brown, Grey Fox, Comparadun', nymph:'March Brown Nymph',               size:'#10-12', note:'Big, meaty mayflies that bring up large trout. Most reliable on the main stem and East Branch.' },
+    { name:'Green Drake',    sci:'Ephemera guttulata',   ms:5,  me:6,  ds:25, de:20, time:'dusk',      tempMin:55,  dry:'Green Drake Comparadun, Coffin Fly Spinner', nymph:'Wiggle Nymph, Drake Nymph', size:'#8-10', note:'Premier hatch on the Delaware system. Main stem and East Branch see the best activity. West Branch less reliable. Dusk emergence, Coffin Fly spinner after dark.' },
+    { name:'Brown Drake',    sci:'Ephemera simulans',    ms:5,  me:6,  ds:28, de:20, time:'dusk',      tempMin:58,  dry:'Brown Drake, Brown Wulff',          nymph:'Brown Drake Nymph',               size:'#10-12', note:'Overlaps with Green Drake. Silty, slower sections of main stem and East Branch. Less predictable but brings up big fish.' },
+    { name:'Sulphur',        sci:'Ephemerella dorothea', ms:5,  me:9,  ds:20, de:15, time:'dusk',      tempMin:56,  dry:'Sulphur Sparkle Dun, Parachute Sulphur, Comparadun', nymph:'Sulphur Nymph', size:'#16-18', note:'The Delaware's most important and longest hatch. Mid-June through early September on the West Branch tailwater. Fish become highly selective  -  carry emergers, cripples, and spinners.' },
+    { name:'Isonychia (Slate Drake)',sci:'Isonychia bicolor',ms:6,me:10,ds:1, de:31, time:'evening',   tempMin:58,  dry:'Slate Drake, Dun Variant, Isonychia Spinner', nymph:'Isonychia Nymph',         size:'#10-12', note:'Strong swimmer  -  swing the nymph. Dun and spinner fish well into fall. One of the most consistent evening hatches on the West Branch.' },
+    { name:'Trico',          sci:'Tricorythodes sp.',    ms:7,  me:9,  ds:1,  de:30, time:'morning',   tempMin:60,  dry:'Trico Spinner, CDC Trico',         nymph:'Trico Nymph',                     size:'#22-26', note:'Morning spinner falls in Lordville-Long Eddy stretch. East Branch particularly good. Requires fine tippet and precise presentation.' },
+    { name:'Light Cahill',   sci:'Stenacron interpunctatum',ms:6,me:9, ds:1,  de:30, time:'evening',   tempMin:58,  dry:'Light Cahill, Comparadun',         nymph:'Hare's Ear',                     size:'#14-16', note:'Consistent summer evening hatch throughout the Delaware system. Often overlooked during Sulphur season but effective.' },
+    { name:'White Fly',      sci:'Ephoron leukon',       ms:8,  me:9,  ds:5,  de:15, time:'night',     tempMin:65,  dry:'White Wulff, White Elk Hair',      nymph:'White Soft Hackle',               size:'#12-14', note:'Late summer spectacle on slower Delaware sections. Short intense evening/night window. Worth the trip to witness.' },
+    { name:'Terrestrials',   sci:'Ants/Beetles/Hoppers', ms:6,  me:9,  ds:15, de:30, time:'afternoon', tempMin:62,  dry:'Foam Hopper, Ant, Beetle',         nymph:'None',                            size:'#10-16', note:'Summer subsidy fishing between hatches. Delaware's wide banks and meadow sections are hopper country in July-August.' },
+    { name:'Autumn Caddis',  sci:'Neophylax sp.',        ms:9,  me:11, ds:1,  de:15, time:'afternoon', tempMin:46,  dry:'Elk Hair Caddis, Orange Stimulator',nymph:'Caddis Pupa',                     size:'#12-14', note:'Good fall hatch throughout the Delaware system. Fish with an Elk Hair and swing soft hackles.' },
+    { name:'Blue-Winged Olive (Fall)',sci:'Baetis sp.',  ms:9,  me:11, ds:1,  de:30, time:'afternoon', tempMin:44,  dry:'Parachute BWO, Sparkle Dun',       nymph:'Pheasant Tail',                   size:'#18-22', note:'Important fall hatch. West Branch tailwater fishes well into November on cloudy days.' },
+  ],
+
+  // ── Catskill freestone streams ────────────────────────────────────────────
+  // Beaverkill, Willowemoc, Esopus, Schoharie, Neversink
+  catskill: [
+    { name:'Midge',          sci:'Chironomidae',         ms:1,  me:12, ds:1,  de:31, time:'morning',   tempMin:34,  dry:'Griffith's Gnat, CDC Midge',      nymph:'Zebra Midge, Brassie',            size:'#22-26', note:'Year-round. Winter midging on the Beaverkill and Neversink can surprise you with surface action.' },
+    { name:'Early Black Stonefly',sci:'Allocapnia sp.',  ms:2,  me:4,  ds:15, de:15, time:'afternoon', tempMin:38,  dry:'Black Elk Hair, Black Stimulator',  nymph:'Black Stonefly Nymph',            size:'#16-18', note:'First hatch of the Catskill season. Fish before other insects appear.' },
+    { name:'Blue-Winged Olive',sci:'Baetis tricaudatus', ms:3,  me:5,  ds:15, de:31, time:'afternoon', tempMin:42,  dry:'Parachute BWO, Sparkle Dun',        nymph:'Pheasant Tail, RS2',              size:'#18-20', note:'Pre-Hendrickson BWOs. Overcast days. Strong on the Neversink and lower Beaverkill.' },
+    { name:'Quill Gordon',   sci:'Epeorus pleuralis',    ms:4,  me:4,  ds:5,  de:30, time:'afternoon', tempMin:46,  dry:'Quill Gordon (Catskill tie), Adams', nymph:'Hare's Ear, Quill Gordon Nymph',size:'#14',    note:'The iconic first hatch of the Catskills. Theodore Gordon's signature pattern. Watch for emergers in the film before the dun.' },
+    { name:'Hendrickson',    sci:'Ephemerella subvaria', ms:4,  me:5,  ds:15, de:10, time:'afternoon', tempMin:48,  dry:'Hendrickson, Red Quill',            nymph:'Hare's Ear, Soft Hackle Emerger',size:'#12-14',note:'The most celebrated Catskill hatch. Mid-afternoon on the Beaverkill and Willowemoc. Spinner fall (Red Quill) at dusk is often better than the hatch itself.' },
+    { name:'Grannom / Apple Caddis',sci:'Brachycentrus',ms:4,  me:5,  ds:15, de:20, time:'afternoon', tempMin:46,  dry:'Elk Hair Caddis, X-Caddis, Sparkle Pupa',nymph:'Green Rock Worm',             size:'#14-16', note:'Heavy caddis activity on all Catskill streams in late April. Pupae are deadly swung near the surface.' },
+    { name:'March Brown',    sci:'Maccaffertium vicarium',ms:5, me:6,  ds:1,  de:10, time:'afternoon', tempMin:52,  dry:'March Brown, American March Brown', nymph:'March Brown Nymph',               size:'#10-12', note:'Big flies, aggressive rises. Afternoon emergence on the Beaverkill and Willowemoc. Often better on overcast days.' },
+    { name:'American March Brown / Grey Fox',sci:'Maccaffertium ithaca',ms:5,me:6,ds:10,de:15,time:'afternoon',tempMin:54,dry:'Grey Fox, Comparadun',nymph:'Hare's Ear', size:'#12-14',note:'Overlaps with March Brown. Slightly smaller and grayer. Good evening spinner fall.' },
+    { name:'Green Drake',    sci:'Ephemera guttulata',   ms:5,  me:6,  ds:25, de:15, time:'dusk',      tempMin:55,  dry:'Green Drake Comparadun, Coffin Fly Spinner, Wulff', nymph:'Drake Wiggle Nymph', size:'#8-10', note:'The Catskill event of the year on the Beaverkill. Dusk emergence. Coffin Fly spinner after dark is unforgettable. Less reliable on the Esopus due to portal releases.' },
+    { name:'Sulphur',        sci:'Ephemerella dorothea', ms:5,  me:8,  ds:20, de:31, time:'dusk',      tempMin:56,  dry:'Sulphur Comparadun, CDC Sulphur',   nymph:'Sulphur Nymph, Sparkle Pupa',     size:'#16-18', note:'Long, reliable evening hatch throughout the Catskills. Beaverkill and Delaware branches have excellent Sulphur fishing. Fish become highly selective by July.' },
+    { name:'Isonychia (Slate Drake)',sci:'Isonychia bicolor',ms:5,me:10,ds:15,de:31,time:'evening',   tempMin:56,  dry:'Slate Drake, Dun Variant, Isonychia Parachute', nymph:'Isonychia Nymph',        size:'#10-12', note:'Important Catskill hatch from late spring through fall. The Esopus is famous for its Isonychia  -  imitated by the classic Dun Variant. Swim the nymph.' },
+    { name:'Light Cahill',   sci:'Stenacron interpunctatum',ms:6,me:8, ds:1,  de:31, time:'evening',   tempMin:58,  dry:'Light Cahill, Catskill Light Cahill',nymph:'Hare's Ear',                    size:'#14-16', note:'Summer evening staple throughout the Catskills. Cream-colored dun. Often overlooked but reliable.' },
+    { name:'Trico',          sci:'Tricorythodes sp.',    ms:7,  me:9,  ds:1,  de:30, time:'morning',   tempMin:58,  dry:'Trico Spinner, CDC Trico',         nymph:'Trico Nymph',                     size:'#22-26', note:'Morning spinner falls on slower Catskill meadow sections and pools. Beaverkill meadows section is excellent for Tricos.' },
+    { name:'Terrestrials',   sci:'Ants/Beetles/Hoppers', ms:6,  me:9,  ds:15, de:30, time:'afternoon', tempMin:62,  dry:'Catskill Hopper, Foam Ant, Beetle', nymph:'None',                            size:'#10-18', note:'Summer between-hatch fishing. Target banks, undercut roots, and overhanging brush. Ants are surprisingly effective even on the most selective Catskill trout.' },
+    { name:'Autumn Caddis',  sci:'Neophylax sp.',        ms:9,  me:11, ds:1,  de:15, time:'afternoon', tempMin:46,  dry:'Orange Elk Hair, Orange Stimulator',nymph:'Caddis Pupa',                     size:'#12-14', note:'October caddis on Catskill streams. Great attractor in the fall. Swing wet flies and soft hackles through runs.' },
+    { name:'Blue-Winged Olive (Fall)',sci:'Baetis sp.',  ms:9,  me:11, ds:1,  de:30, time:'afternoon', tempMin:44,  dry:'Parachute BWO, Comparadun',        nymph:'Pheasant Tail, RS2',              size:'#18-22', note:'Best fall hatch. Overcast drizzly days. One of the most reliable hatches to find rising fish late in the season on the Beaverkill.' },
+    { name:'Mahogany Dun',   sci:'Paraleptophlebia sp.', ms:9,  me:10, ds:1,  de:31, time:'afternoon', tempMin:48,  dry:'Mahogany Dun, Comparadun',         nymph:'Pheasant Tail (dark)',             size:'#16-18', note:'Underrated fall mayfly on Catskill streams. Overcast fall afternoons. Good dry fly action when other hatches have ended.' },
+  ],
+};
+
+// ── Stream profile assignment ─────────────────────────────────────────────────
+// Maps USGS site ID to hatch profile
+const STREAM_PROFILE = {
+  '01476480': 'freestone_pa',  // Ridley Creek
+  '01480000': 'freestone_pa',  // Brandywine Creek
+  '01491000': 'limestone',     // Brandywine W Branch (limestone character)
+  '01471000': 'limestone',     // Tulpehocken (tailwater/limestone)
+  '01442500': 'freestone_pa',  // Brodhead Creek
+  '01439500': 'delaware',      // Delaware River main stem
+  '01473000': 'freestone_pa',  // Wissahickon Creek
+  '01554000': 'freestone_pa',  // Spring Creek (Bellefonte)  -  actually limestone but similar
+  '01553500': 'limestone',     // Penns Creek  -  classic limestone
+  '01452500': 'freestone_pa',  // Lehigh River
+  '01470500': 'freestone_pa',  // Schuylkill River
+  '01440400': 'freestone_pa',  // Brodhead Upper
+  '01567000': 'freestone_pa',  // Juniata River
+  '01481000': 'freestone_pa',  // West Branch Brandywine
+  '01350000': 'catskill',      // Schoharie Creek
+  '01362500': 'catskill',      // Esopus Creek
+  '01372500': 'freestone_pa',  // Wallkill River (bass/pickerel, use generic)
+  '01421000': 'delaware',      // Delaware W Branch
+  '01417000': 'delaware',      // East Branch Delaware
+  '01420500': 'catskill',      // Beaverkill
+  '01419500': 'catskill',      // Willowemoc
+  '01313500': 'catskill',      // Ausable W Branch
+  '01315000': 'catskill',      // Ausable E Branch
+  '04260500': 'catskill',      // Salmon River
+  '01357500': 'catskill',      // Catskill Creek
+  '01423000': 'catskill',      // Neversink River
+};
+
+// ── Hatch logic ────────────────────────────────────────────────────────────────
+function getHatchesForDate(siteId, tempF) {
+  const profile = STREAM_PROFILE[siteId] || 'freestone_pa';
+  const hatches = HATCH_DB[profile] || [];
+  const now = new Date();
+  const month = now.getMonth() + 1; // 1-12
+  const day = now.getDate();
+
+  // Find active hatches: month range overlaps today, temp threshold met
+  const active = hatches.filter(h => {
+    // Handle year-wrap hatches (none in our data, but safe to check)
+    const inRange = (month > h.ms || (month === h.ms && day >= h.ds)) &&
+                    (month < h.me || (month === h.me && day <= h.de));
+    const tempOk = tempF === null || tempF >= h.tempMin;
+    return inRange && tempOk;
+  });
+
+  // Find upcoming hatches (next 30 days)
+  const upcoming = hatches.filter(h => {
+    if (active.find(a => a.name === h.name)) return false;
+    // Is this hatch starting in the next 30 days?
+    const hatchStart = new Date(now.getFullYear(), h.ms - 1, h.ds);
+    const diff = (hatchStart - now) / (1000 * 60 * 60 * 24);
+    return diff > 0 && diff <= 30;
+  });
+
+  return { active, upcoming, profile };
+}
 
 // Default rivers shown on first load
 const DEFAULT_IDS = [
@@ -397,7 +603,7 @@ function getWadingAdvice(safety, cfs, height) {
   }
   if (safety.level === 'caution') {
     if (safety.cause === 'gauge height') return `Gauge height is elevated (${height !== null ? height.toFixed(2) + ' ft' : 'above normal'}) even though flow looks manageable. Water may be pooled or backed up. Experienced waders only.`;
-    if (safety.cause === 'flow rate') return `Flow is elevated (${cfs !== null ? cfs.toFixed(0) + ' CFS' : 'above normal'}). Experienced waders only — use a wading staff and scout before crossing.`;
+    if (safety.cause === 'flow rate') return `Flow is elevated (${cfs !== null ? cfs.toFixed(0) + ' CFS' : 'above normal'}). Experienced waders only - use a wading staff and scout before crossing.`;
     return 'Both flow and height are elevated. Experienced waders only. Use a wading staff and scout crossings.';
   }
   return 'Data unavailable. Check USGS directly before wading.';
@@ -407,9 +613,9 @@ function getWadingAdvice(safety, cfs, height) {
 function getTrend(current, prev) {
   if (current === null || prev === null) return { arrow:'', cls:'trend-stable' };
   const pct = (current - prev) / prev;
-  if (pct > 0.05) return { arrow:'↑', cls:'trend-up' };
-  if (pct < -0.05) return { arrow:'↓', cls:'trend-down' };
-  return { arrow:'→', cls:'trend-stable' };
+  if (pct > 0.05) return { arrow:'^', cls:'trend-up' };
+  if (pct < -0.05) return { arrow:'v', cls:'trend-down' };
+  return { arrow:'>', cls:'trend-stable' };
 }
 
 // ── Temp color ────────────────────────────────────────────────────────────────
@@ -478,7 +684,7 @@ function buildRainChart(rainHours) {
 
   let badgeClass = 'rain-total-dry', badgeText = 'No rain';
   if (totalMm > 0.5 && totalMm <= 10) { badgeClass='rain-total-light'; badgeText=`${totalMm.toFixed(1)}mm`; }
-  else if (totalMm > 10) { badgeClass='rain-total-heavy'; badgeText=`${totalMm.toFixed(1)}mm ⚠`; }
+  else if (totalMm > 10) { badgeClass='rain-total-heavy'; badgeText=`${totalMm.toFixed(1)}mm !`; }
 
   const barHtml = blocks.map(b => {
     const pct = maxMm > 0 ? (parseFloat(b.total)/maxMm)*100 : 0;
@@ -496,7 +702,7 @@ function buildRainChart(rainHours) {
 
   return `<div class="rain-wrap">
     <div class="rain-header">
-      <span class="rain-label">Rain Forecast · 48hr</span>
+      <span class="rain-label">Rain Forecast - 48hr</span>
       <span class="rain-total-badge ${badgeClass}">${badgeText}</span>
     </div>
     <div class="rain-bars">${barHtml}</div>
@@ -613,12 +819,12 @@ function renderCard(gauge, data) {
   const {cfs,height,tempF,prevCfs,history,rainHours} = data;
   const safety = getSafety(cfs,height);
   const trend = getTrend(cfs,prevCfs);
-  const cfsStr = cfs!==null?cfs.toFixed(0):'—';
-  const htStr = height!==null?height.toFixed(2):'—';
-  const tempStr = tempF!==null?`${tempF}°`:'—';
+  const cfsStr = cfs!==null?cfs.toFixed(0):'--';
+  const htStr = height!==null?height.toFixed(2):'--';
+  const tempStr = tempF!==null?`${tempF}F`:' - ';
   const tempCls = getTempClass(tempF);
   const barClass={safe:'bar-safe',caution:'bar-caution',danger:'bar-danger',loading:'bar-loading'}[safety.color];
-  const icon={safe:'🎣',caution:'⚠️',danger:'🚫',unknown:'📡'}[safety.level]||'📡';
+  const icon={safe:'[fish]',caution:'!',danger:'[x]',unknown:'[?]'}[safety.level]||'[?]';
   const stripClass={safe:'safe',caution:'caution',danger:'danger',unknown:'unknown'}[safety.level]||'unknown';
   const sparkline = buildSparkline(history||[],gauge.safeThreshold,cfs,safety.color);
   const rain = buildRainChart(rainHours||[]);
@@ -631,7 +837,7 @@ function renderCard(gauge, data) {
         <div><div class="river-name">${gauge.name}</div><div class="river-location">${gauge.location}</div></div>
         <div>
           <div class="safety-badge badge-${safety.color}">${safety.label}</div>
-          ${safety.cause ? `<div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--ink-light);text-align:right;margin-top:4px;letter-spacing:0.3px;">↑ ${safety.cause}</div>` : ''}
+          ${safety.cause ? `<div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--ink-light);text-align:right;margin-top:4px;letter-spacing:0.3px;">^ ${safety.cause}</div>` : ''}
         </div>
       </div>
       <div class="metrics-row">
@@ -653,6 +859,10 @@ function renderCard(gauge, data) {
       </div>
       ${sparkline}
       ${rain}
+      <button class="hatch-btn" onclick="openHatchDrawer('${gauge.id}',event)">
+        Hatches &amp; Fly Recommendations
+        <span class="hatch-btn-count" id="hcount-${gauge.id}">...</span>
+      </button>
       <div class="wading-strip ${stripClass}">
         <span class="wading-icon">${icon}</span>
         <span>${getWadingAdvice(safety, cfs, height)}</span>
@@ -667,16 +877,16 @@ function openModal(siteId) {
   const data = gaugeData[siteId]||{cfs:null,height:null,tempF:null,prevCfs:null,history:[],rainHours:[]};
   const safety = getSafety(data.cfs,data.height);
   const trend = getTrend(data.cfs,data.prevCfs);
-  const cfsStr = data.cfs!==null?data.cfs.toFixed(1):'—';
-  const htStr = data.height!==null?data.height.toFixed(2):'—';
-  const tempStr = data.tempF!==null?`${data.tempF}°F`:'—';
+  const cfsStr = data.cfs!==null?data.cfs.toFixed(1):' - ';
+  const htStr = data.height!==null?data.height.toFixed(2):'--';
+  const tempStr = data.tempF!==null?`${data.tempF}F`:' - ';
   const tempCls = getTempClass(data.tempF);
   const safetyClass = safety.level==='unknown'?'unknown':safety.level;
   const fmt = t=>t?new Date(t).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'';
 
   document.getElementById('modalBody').innerHTML = `
     <div class="modal-river-name">${gauge.name}</div>
-    <div class="modal-location">${gauge.location} · USGS ${gauge.id}</div>
+    <div class="modal-location">${gauge.location} - USGS ${gauge.id}</div>
     <div class="modal-metrics">
       <div class="modal-metric">
         <div class="metric-label">Flow Rate</div>
@@ -702,7 +912,7 @@ function openModal(siteId) {
     </div>
     <div class="modal-notes"><div class="notes-label">Fishing Notes</div><div class="notes-text">${gauge.notes}</div></div>
     <a href="https://waterdata.usgs.gov/monitoring-location/${gauge.id}/" target="_blank" class="usgs-link">
-      <span>View USGS hydrograph ↗</span><span style="color:var(--ink-light);font-size:9px">waterdata.usgs.gov</span>
+      <span>View USGS hydrograph -></span><span style="color:var(--ink-light);font-size:9px">waterdata.usgs.gov</span>
     </a>`;
   document.getElementById('modalOverlay').classList.add('open');
 }
@@ -718,11 +928,11 @@ function toggleEditMode() {
   const btn = document.getElementById('editBtn');
   if (editMode) {
     btn.classList.add('active');
-    btn.textContent = '✓ Done';
+    btn.textContent = 'Done Done';
     openDrawer();
   } else {
     btn.classList.remove('active');
-    btn.textContent = '⊕ Rivers';
+    btn.textContent = '+ Rivers';
     closeDrawerDirect();
   }
 }
@@ -783,7 +993,7 @@ function renderDrawerList() {
           <div class="drawer-item-loc">${g.location}</div>
         </div>
         <button class="drawer-add-btn btn-remove" onclick="removeRiver('${g.id}', new Event('click'))">
-          − Remove
+          - Remove
         </button>
       </div>`).join('');
   }
@@ -815,10 +1025,111 @@ function addRiver(id) {
   if (gauge) fetchGaugeData(gauge).then(data => { gaugeData[id] = data; renderAll(); });
 }
 
+
+// ── Hatch drawer ──────────────────────────────────────────────────────────────
+function openHatchDrawer(siteId, e) {
+  if (e && e.stopPropagation) e.stopPropagation();
+  const gauge = STREAM_LIBRARY.find(g => g.id === siteId);
+  if (!gauge) return;
+  const data = gaugeData[siteId] || {};
+  const tempF = data.tempF || null;
+  const { active, upcoming, profile } = getHatchesForDate(siteId, tempF);
+
+  // Update badge count on card
+  const badge = document.getElementById('hcount-' + siteId);
+  if (badge) badge.textContent = active.length ? `${active.length} active` : 'none active';
+
+  // Set drawer header
+  document.getElementById('hatchDrawerTitle').textContent = gauge.name + ' Hatches';
+  const profileLabel = {limestone:'Limestone / Tailwater', freestone_pa:'Freestone Stream', delaware:'Upper Delaware System', catskill:'Catskill Freestone'}[profile] || '';
+  const dateStr = new Date().toLocaleDateString('en-US',{month:'long',day:'numeric'});
+  document.getElementById('hatchDrawerSub').textContent = `${profileLabel} - ${dateStr}${tempF ? ' - ' + tempF + ' FF water' : ''}`;
+
+  // Build content
+  let html = '';
+
+  if (active.length === 0) {
+    html += '<div class="hatch-empty">No active hatches right now.<br>Check upcoming hatches below or try nymphing and streamers.</div>';
+  } else {
+    html += '<div class="hatch-section-label">&#10004; Hatching Now</div>';
+    html += active.map(h => buildHatchCard(h, 'active')).join('');
+  }
+
+  if (upcoming.length > 0) {
+    html += `<div class="hatch-section-label" style="margin-top:${active.length?'12px':'0'}">&#9711; Coming in the Next 30 Days</div>`;
+    html += upcoming.map(h => buildHatchCard(h, 'upcoming')).join('');
+  }
+
+  // Year-round nymphing tip
+  html += `<div class="hatch-section-label" style="margin-top:12px">&#9632; Always Effective</div>
+    <div class="hatch-card">
+      <div class="hatch-card-top">
+        <div><div class="hatch-name">Subsurface & Streamers</div><div class="hatch-sci">Nymphs, wets, and streamers work year-round</div></div>
+      </div>
+      <div class="hatch-flies">
+        <div class="hatch-fly-box"><div class="hatch-fly-label">Nymphs</div><div class="hatch-fly-value">Pheasant Tail, Hare's Ear, Zebra Midge</div></div>
+        <div class="hatch-fly-box"><div class="hatch-fly-label">Streamers</div><div class="hatch-fly-value">Woolly Bugger, Muddler, Clouser Minnow</div></div>
+      </div>
+      <div class="hatch-note">When nothing is hatching, nymphing 6-18 inches off the bottom is the most reliable technique. In high or off-color water, switch to streamers and cover water.</div>
+    </div>`;
+
+  html += '<div style="height:8px"></div>';
+  document.getElementById('hatchDrawerContent').innerHTML = html;
+  document.getElementById('hatchDrawerOverlay').classList.add('open');
+}
+
+function buildHatchCard(h, type) {
+  const timeLabels = {morning:'Morning',afternoon:'Afternoon',evening:'Evening',dusk:'Dusk / Sunset',night:'Night / After Dark',all:'All Day'};
+  const timeLabel = timeLabels[h.time] || h.time;
+  const tempChip = h.tempMin > 34 ? `<div class="hatch-temp-chip">Triggers at ${h.tempMin}F+</div>` : '';
+  return `<div class="hatch-card ${type}-hatch">
+    <div class="hatch-card-top">
+      <div>
+        <div class="hatch-name">${h.name}</div>
+        <div class="hatch-sci">${h.sci}</div>
+      </div>
+      <div>
+        <div class="hatch-time-badge">${timeLabel}</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--ink-light);text-align:right;margin-top:4px;">${h.size}</div>
+      </div>
+    </div>
+    <div class="hatch-flies">
+      <div class="hatch-fly-box">
+        <div class="hatch-fly-label">Dry Fly</div>
+        <div class="hatch-fly-value">${h.dry}</div>
+      </div>
+      <div class="hatch-fly-box">
+        <div class="hatch-fly-label">Nymph / Wet</div>
+        <div class="hatch-fly-value">${h.nymph}</div>
+      </div>
+    </div>
+    <div class="hatch-note">${h.note}</div>
+    ${tempChip}
+  </div>`;
+}
+
+function closeHatchDrawer(e) {
+  if (e.target === document.getElementById('hatchDrawerOverlay'))
+    document.getElementById('hatchDrawerOverlay').classList.remove('open');
+}
+
+// Update hatch counts on all visible cards after data loads
+function updateHatchCounts() {
+  getActiveGauges().forEach(gauge => {
+    const badge = document.getElementById('hcount-' + gauge.id);
+    if (!badge) return;
+    const data = gaugeData[gauge.id] || {};
+    const { active } = getHatchesForDate(gauge.id, data.tempF || null);
+    badge.textContent = active.length ? `${active.length} active` : 'see hatches';
+    badge.style.background = active.length ? '#f0c020' : '#e0dcd4';
+    badge.style.color = active.length ? '#5a4000' : 'var(--ink-light)';
+  });
+}
+
 async function loadAllGauges() {
   const icon = document.getElementById('refreshIcon');
   icon.classList.add('spin');
-  document.getElementById('updateText').textContent='Loading…';
+  document.getElementById('updateText').textContent='Loading...';
   document.getElementById('statusDot').style.background='#f0a820';
   const active=getActiveGauges();
   const paG=active.filter(g=>g.state==='PA'), nyG=active.filter(g=>g.state==='NY');
@@ -826,9 +1137,23 @@ async function loadAllGauges() {
   document.getElementById('nyList').innerHTML=nyG.map(renderSkeleton).join('');
   document.getElementById('paCount').textContent=`${paG.length} gauges`;
   document.getElementById('nyCount').textContent=`${nyG.length} gauges`;
-  const results = await Promise.all(active.map(g=>fetchGaugeData(g)));
-  active.forEach((g,i)=>{ gaugeData[g.id]=results[i]; });
-  renderAll();
+  // Fetch in batches of 4 to avoid overwhelming the CORS proxy
+  const BATCH_SIZE = 4;
+  for (let i = 0; i < active.length; i += BATCH_SIZE) {
+    const batch = active.slice(i, i + BATCH_SIZE);
+    const batchResults = await Promise.all(batch.map(g => fetchGaugeData(g)));
+    batch.forEach((g, j) => { gaugeData[g.id] = batchResults[j]; });
+    renderAll();
+    if (i + BATCH_SIZE < active.length) await new Promise(r => setTimeout(r, 700));
+  }
+  // Retry any failed gauges once after a short delay
+  const failed = active.filter(g => gaugeData[g.id] && gaugeData[g.id].error);
+  if (failed.length > 0) {
+    await new Promise(r => setTimeout(r, 2000));
+    const retries = await Promise.all(failed.map(g => fetchGaugeData(g)));
+    failed.forEach((g, i) => { if (!retries[i].error) gaugeData[g.id] = retries[i]; });
+    renderAll();
+  }
   const now=new Date();
   document.getElementById('updateText').textContent=now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
   document.getElementById('statusDot').style.background='#40c070';
@@ -863,5 +1188,6 @@ function switchView(view) {
 loadAllGauges();
 setInterval(loadAllGauges, 15*60*1000);
 </script>
+
 </body>
 </html>
