@@ -233,6 +233,35 @@
   .btn-remove{background:#fdecea;border-color:var(--danger-border);color:var(--danger);}
   .btn-remove:active{background:#fad4d0;}
 
+
+  /* Hatch drawer */
+  .hatch-drawer-overlay{position:fixed;inset:0;z-index:300;background:rgba(20,20,18,0.65);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:none;align-items:flex-end;}
+  .hatch-drawer-overlay.open{display:flex;}
+  .hatch-drawer{width:100%;max-width:430px;margin:0 auto;background:var(--bg-card);border-radius:20px 20px 0 0;padding:16px 0 calc(24px + env(safe-area-inset-bottom));animation:slide-up 0.28s cubic-bezier(0.34,1.4,0.64,1);max-height:90vh;display:flex;flex-direction:column;}
+  .hatch-drawer-head{display:flex;align-items:flex-start;justify-content:space-between;padding:0 20px;margin-bottom:4px;flex-shrink:0;}
+  .hatch-drawer-title{font-family:'Bitter',serif;font-size:19px;font-weight:700;color:var(--ink);}
+  .hatch-drawer-sub{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-light);margin-top:3px;letter-spacing:0.3px;}
+  .hatch-close-btn{background:var(--bg-section);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-light);cursor:pointer;flex-shrink:0;margin-left:12px;margin-top:2px;}
+  .hatch-scroll{overflow-y:auto;flex:1;padding:12px 12px 0;}
+  .hatch-section-label{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--ink-light);padding:4px 2px 8px;}
+  .hatch-card{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:13px 14px;margin-bottom:8px;}
+  .hatch-card.active-hatch{border-color:var(--safe-border);background:var(--safe-bg);}
+  .hatch-card.upcoming-hatch{border-color:var(--caution-border);background:var(--caution-bg);}
+  .hatch-card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;}
+  .hatch-name{font-family:'Bitter',serif;font-size:15px;font-weight:700;color:var(--ink);}
+  .hatch-sci{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--ink-light);margin-top:2px;}
+  .hatch-time-badge{font-family:'IBM Plex Mono',monospace;font-size:9px;padding:3px 8px;border-radius:10px;background:var(--accent-bg);color:var(--accent);border:1px solid #c0d4f8;white-space:nowrap;flex-shrink:0;margin-left:8px;}
+  .hatch-flies{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;}
+  .hatch-fly-box{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:8px 10px;}
+  .hatch-fly-label{font-family:'IBM Plex Mono',monospace;font-size:8px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--ink-light);margin-bottom:3px;}
+  .hatch-fly-value{font-size:12px;color:var(--ink-mid);line-height:1.4;}
+  .hatch-note{font-size:11px;color:var(--ink-light);line-height:1.5;border-top:1px solid var(--border);padding-top:7px;margin-top:2px;}
+  .hatch-temp-chip{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--ink-light);background:var(--bg-section);border:1px solid var(--border);border-radius:10px;padding:2px 7px;margin-top:6px;}
+  .hatch-btn{display:flex;align-items:center;justify-content:space-between;background:#fff8e8;border:1px solid #f0d060;border-radius:8px;padding:8px 12px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;color:#806000;cursor:pointer;width:100%;margin-top:8px;transition:background 0.15s;}
+  .hatch-btn:active{background:#f0e8c0;}
+  .hatch-btn-count{background:#f0c020;color:#5a4000;border-radius:10px;padding:1px 7px;font-size:9px;}
+  .hatch-empty{text-align:center;padding:24px 16px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-faint);}
+
 </style>
 </head>
 <body>
@@ -242,7 +271,7 @@
       <div class="logo-group">
         <div class="logo-mark">〜</div>
         <div>
-          <div class="app-name">Current <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:400;color:#5870a0;letter-spacing:0.5px;vertical-align:middle;">v6.1</span></div>
+          <div class="app-name">Current <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:400;color:#5870a0;letter-spacing:0.5px;vertical-align:middle;">v6.2</span></div>
           <div class="app-sub">PA &amp; NY River Monitor</div>
         </div>
       </div>
@@ -258,8 +287,7 @@
     </div>
   </header>
 
-  <div id="debugPanel" style="display:none;background:#1a1a18;color:#40c070;font-family:monospace;font-size:11px;padding:10px 16px;margin:8px 12px;border-radius:8px;white-space:pre-wrap;line-height:1.6;"></div>
-<div id="riverView" class="view active">
+  <div id="riverView" class="view active">
     <div class="legend-bar">
       <div class="legend-item li-safe"><div class="legend-dot" style="background:var(--safe)"></div>Safe</div>
       <div class="legend-item li-caution"><div class="legend-dot" style="background:#f0a820"></div>Caution</div>
@@ -360,6 +388,26 @@
     <div class="drawer-list" id="drawerList"></div>
   </div>
 </div>
+
+
+<!-- Hatch drawer -->
+<div class="hatch-drawer-overlay" id="hatchDrawerOverlay" onclick="closeHatchDrawer(event)">
+  <div class="hatch-drawer">
+    <div class="drawer-handle"></div>
+    <div class="hatch-drawer-head">
+      <div>
+        <div class="hatch-drawer-title" id="hatchDrawerTitle">Hatches</div>
+        <div class="hatch-drawer-sub" id="hatchDrawerSub"></div>
+      </div>
+      <button class="hatch-close-btn" onclick="document.getElementById('hatchDrawerOverlay').classList.remove('open')">Close</button>
+    </div>
+    <div class="hatch-scroll" id="hatchDrawerContent"></div>
+  </div>
+</div>
+
+<!-- Hatch database as JSON - isolated from JS parser -->
+<script id="hatchData" type="application/json">{"limestone":[{"name":"Midge","sci":"Chironomidae","ms":1,"me":12,"ds":1,"de":31,"time":"morning","tempMin":34,"dry":"Griffith's Gnat, CDC Midge","nymph":"Zebra Midge, Mercury Midge","size":"#22-26","note":"Year-round staple. Most effective on flat slow water in winter and early spring."},{"name":"Blue-Winged Olive (Early)","sci":"Baetis tricaudatus","ms":3,"me":5,"ds":15,"de":31,"time":"afternoon","tempMin":42,"dry":"Parachute BWO, Sparkle Dun","nymph":"Pheasant Tail, RS2","size":"#18-22","note":"Thrives on overcast drizzly days. Often the first real dry fly hatch of the year on limestone creeks."},{"name":"Quill Gordon","sci":"Epeorus pleuralis","ms":4,"me":4,"ds":1,"de":20,"time":"afternoon","tempMin":46,"dry":"Quill Gordon, Adams","nymph":"Hare's Ear, Pheasant Tail","size":"#14","note":"First major mayfly of spring. Hatches 1-2 weeks earlier on limestone than freestone."},{"name":"Hendrickson","sci":"Ephemerella subvaria","ms":4,"me":5,"ds":5,"de":15,"time":"afternoon","tempMin":48,"dry":"Hendrickson, Red Quill","nymph":"Hare's Ear, Soft Hackle","size":"#12-14","note":"One of the most reliable early-season hatches. Fish the dun in afternoon, the spinner at dusk."},{"name":"Grannom Caddis","sci":"Brachycentrus sp.","ms":4,"me":5,"ds":1,"de":20,"time":"afternoon","tempMin":46,"dry":"Elk Hair Caddis, X-Caddis","nymph":"Caddis Pupa, Green Rock Worm","size":"#14-16","note":"Early black caddis. Swarms of egg-laying females at surface create explosive feeding."},{"name":"March Brown","sci":"Maccaffertium vicarium","ms":5,"me":6,"ds":1,"de":15,"time":"afternoon","tempMin":52,"dry":"March Brown, American March Brown","nymph":"March Brown Nymph, Hare's Ear","size":"#10-12","note":"Big bug with aggressive rises. More reliable on freestone sections. Fish the afternoon windows."},{"name":"Sulphur","sci":"Ephemerella dorothea","ms":5,"me":7,"ds":10,"de":31,"time":"dusk","tempMin":55,"dry":"Sulphur Sparkle Dun, Parachute Sulphur, CDC Emerger","nymph":"Sulphur Nymph, Beadhead Soft Hackle","size":"#16-18","note":"PA's most reliable and longest-running evening hatch. Fires around 7pm. Trout get very selective."},{"name":"Green Drake","sci":"Ephemera guttulata","ms":5,"me":6,"ds":20,"de":15,"time":"dusk","tempMin":55,"dry":"Green Drake Comparadun, Coffin Fly Spinner","nymph":"Drake Nymph, Wiggle Nymph","size":"#8-10","note":"The signature PA hatch. Large creamy duns at dusk bring up big browns. Switch to Coffin Fly spinner after dark. Arrives earlier on limestone than freestone."},{"name":"Light Cahill","sci":"Stenacron interpunctatum","ms":6,"me":8,"ds":1,"de":31,"time":"evening","tempMin":58,"dry":"Light Cahill, Comparadun","nymph":"Hare's Ear, Soft Hackle","size":"#14-16","note":"Creamy yellow dun. Consistent summer evening hatch."},{"name":"Slate Drake","sci":"Isonychia bicolor","ms":6,"me":10,"ds":1,"de":31,"time":"evening","tempMin":58,"dry":"Slate Drake, Dun Variant, Iso Dun","nymph":"Isonychia Nymph","size":"#10-12","note":"Strong-swimming nymph triggers aggressive takes. Dun and spinner fish well at dusk into fall."},{"name":"Trico","sci":"Tricorythodes sp.","ms":7,"me":9,"ds":1,"de":30,"time":"morning","tempMin":60,"dry":"Trico Spinner, CDC Trico","nymph":"Trico Nymph","size":"#22-26","note":"Early morning spinner fall often over by 9am. Requires 6X tippet, slow approach, and targeting individual risers."},{"name":"White Fly","sci":"Ephoron leukon","ms":8,"me":9,"ds":10,"de":10,"time":"night","tempMin":65,"dry":"White Wulff, White Elk Hair","nymph":"White Soft Hackle","size":"#12-14","note":"Late summer spectacle. Massive evening emergence. Short intense feeding window. Bring a headlamp."},{"name":"Autumn Caddis","sci":"Neophylax sp.","ms":9,"me":11,"ds":1,"de":30,"time":"afternoon","tempMin":48,"dry":"Elk Hair Caddis, Orange Stimulator","nymph":"Caddis Pupa, October Caddis","size":"#12-14","note":"Orange-bodied fall caddis. Great attractor on overcast fall afternoons."},{"name":"Blue-Winged Olive (Fall)","sci":"Baetis sp.","ms":9,"me":11,"ds":1,"de":30,"time":"afternoon","tempMin":44,"dry":"Parachute BWO, Comparadun","nymph":"Pheasant Tail, RS2","size":"#18-22","note":"Best hatch of fall on overcast days. On tailwaters like Tulpehocken can fish through winter."},{"name":"Terrestrials","sci":"Ants, Beetles, Hoppers","ms":6,"me":9,"ds":15,"de":30,"time":"afternoon","tempMin":60,"dry":"Ant, Beetle, Hopper, Chernobyl","nymph":"None - fish surface only","size":"#10-18","note":"Summer staple when no hatch is visible. Fish to banks and structure. Deadly on flat limestone water."}],"freestone_pa":[{"name":"Midge","sci":"Chironomidae","ms":1,"me":12,"ds":1,"de":31,"time":"morning","tempMin":34,"dry":"Griffith's Gnat","nymph":"Zebra Midge, Brassie","size":"#22-26","note":"Year-round. Best on winter and early spring days with no other hatch activity."},{"name":"Early Black Stonefly","sci":"Allocapnia sp.","ms":2,"me":4,"ds":1,"de":15,"time":"afternoon","tempMin":38,"dry":"Black Elk Hair, Black Stimulator","nymph":"Black Stonefly Nymph","size":"#16-18","note":"First hatch of the year on freestone streams."},{"name":"Blue-Winged Olive","sci":"Baetis tricaudatus","ms":3,"me":5,"ds":15,"de":31,"time":"afternoon","tempMin":42,"dry":"Parachute BWO, Sparkle Dun","nymph":"Pheasant Tail, RS2","size":"#18-20","note":"Best on overcast days. Arrives 1-2 weeks later on freestone than limestone."},{"name":"Quill Gordon","sci":"Epeorus pleuralis","ms":4,"me":4,"ds":10,"de":30,"time":"afternoon","tempMin":46,"dry":"Quill Gordon, Adams","nymph":"Hare's Ear Nymph","size":"#14","note":"Classic early-season dry fly hatch in pocket water."},{"name":"Hendrickson","sci":"Ephemerella subvaria","ms":4,"me":5,"ds":15,"de":20,"time":"afternoon","tempMin":48,"dry":"Hendrickson, Adams","nymph":"Hare's Ear, Soft Hackle","size":"#12-14","note":"Mid-afternoon emergence. Later timing than limestone streams."},{"name":"Grannom Caddis","sci":"Brachycentrus sp.","ms":4,"me":5,"ds":10,"de":31,"time":"afternoon","tempMin":46,"dry":"Elk Hair Caddis, X-Caddis","nymph":"Green Rock Worm, Caddis Pupa","size":"#14-16","note":"Black caddis swarms. Try swinging an Elk Hair at the end of the drift."},{"name":"March Brown","sci":"Maccaffertium vicarium","ms":5,"me":6,"ds":1,"de":15,"time":"afternoon","tempMin":52,"dry":"March Brown, American March Brown","nymph":"March Brown Nymph","size":"#10-12","note":"Big visible duns. Freestone streams often produce excellent March Brown hatches in pocket water."},{"name":"Sulphur","sci":"Ephemerella dorothea","ms":5,"me":7,"ds":20,"de":31,"time":"dusk","tempMin":56,"dry":"Parachute Sulphur, CDC Emerger","nymph":"Sulphur Nymph","size":"#16-18","note":"Evening hatch. Starts a week or two later than limestone. Look for rises in tail-outs after 7pm."},{"name":"Green Drake","sci":"Ephemera guttulata","ms":5,"me":6,"ds":25,"de":20,"time":"dusk","tempMin":55,"dry":"Green Drake Comparadun, Coffin Fly","nymph":"Drake Wiggle Nymph","size":"#8-10","note":"Green Drakes on freestone arrive after limestone, often early June on Brodhead."},{"name":"Yellow Sally Stonefly","sci":"Isoperla sp.","ms":5,"me":7,"ds":15,"de":31,"time":"afternoon","tempMin":56,"dry":"Yellow Stimulator, Yellow Sally","nymph":"Yellow Stonefly Nymph","size":"#14-16","note":"Small yellow stonefly common on faster freestone streams."},{"name":"Light Cahill","sci":"Stenacron interpunctatum","ms":6,"me":8,"ds":1,"de":31,"time":"evening","tempMin":58,"dry":"Light Cahill, Comparadun","nymph":"Hare's Ear","size":"#14-16","note":"Reliable summer evening hatch. Often the go-to pattern when sulphurs taper off."},{"name":"Slate Drake","sci":"Isonychia bicolor","ms":6,"me":10,"ds":1,"de":31,"time":"evening","tempMin":58,"dry":"Slate Drake, Iso Dun","nymph":"Isonychia Nymph, Soft Hackle","size":"#10-12","note":"Hatches on freestone from mid-summer into fall. Strong swimmer."},{"name":"Terrestrials","sci":"Ants, Beetles, Hoppers","ms":6,"me":9,"ds":15,"de":30,"time":"afternoon","tempMin":60,"dry":"Dave's Hopper, Foam Beetle, Ant","nymph":"None","size":"#10-18","note":"Summer banker when no hatch is on. Target undercut banks and overhanging vegetation."},{"name":"Trico","sci":"Tricorythodes sp.","ms":7,"me":9,"ds":1,"de":30,"time":"morning","tempMin":58,"dry":"Trico Spinner, Parachute Trico","nymph":"Trico Nymph","size":"#22-24","note":"Morning spinner falls on freestone flat water. Requires small flies and fine tippet."},{"name":"Autumn Caddis","sci":"Neophylax sp.","ms":9,"me":11,"ds":1,"de":30,"time":"afternoon","tempMin":46,"dry":"Elk Hair Caddis, Orange Stimulator","nymph":"Caddis Pupa","size":"#12-14","note":"October orange. Great fall attractor."},{"name":"Blue-Winged Olive (Fall)","sci":"Baetis sp.","ms":9,"me":11,"ds":1,"de":30,"time":"afternoon","tempMin":44,"dry":"Parachute BWO, Thorax BWO","nymph":"Pheasant Tail","size":"#18-20","note":"Best on gray drizzly fall days. Often the last consistent dry fly hatch of the season."}],"delaware":[{"name":"Midge","sci":"Chironomidae","ms":1,"me":12,"ds":1,"de":31,"time":"morning","tempMin":34,"dry":"Griffith's Gnat, CDC Midge","nymph":"Zebra Midge","size":"#22-26","note":"Year-round on the tailwater sections."},{"name":"Little Black Caddis","sci":"Chimarra sp.","ms":4,"me":4,"ds":1,"de":30,"time":"afternoon","tempMin":44,"dry":"Black Elk Hair Caddis","nymph":"Black Caddis Pupa","size":"#16-18","note":"First caddis of the year. Important early spring hatch on all Delaware branches."},{"name":"Blue-Winged Olive","sci":"Baetis tricaudatus","ms":4,"me":5,"ds":1,"de":31,"time":"afternoon","tempMin":44,"dry":"Parachute BWO, Sparkle Dun","nymph":"Pheasant Tail, RS2","size":"#18-22","note":"Key early hatch. West Branch fish are selective - fish with fine tippet."},{"name":"Quill Gordon","sci":"Epeorus pleuralis","ms":4,"me":5,"ds":15,"de":20,"time":"afternoon","tempMin":46,"dry":"Quill Gordon, Traditional Catskill QG","nymph":"Hare's Ear","size":"#14","note":"Classic first mayfly. Mid-April on Delaware system."},{"name":"Hendrickson","sci":"Ephemerella subvaria","ms":4,"me":5,"ds":15,"de":15,"time":"afternoon","tempMin":48,"dry":"Hendrickson, Red Quill","nymph":"Hare's Ear, Soft Hackle","size":"#12-14","note":"Reliable mid-afternoon hatch. Upper Delaware Hendricksons bring up large wild brown trout."},{"name":"March Brown","sci":"Maccaffertium vicarium","ms":5,"me":6,"ds":1,"de":15,"time":"afternoon","tempMin":52,"dry":"March Brown, Grey Fox, Comparadun","nymph":"March Brown Nymph","size":"#10-12","note":"Big mayflies that bring up large trout. Most reliable on the main stem and East Branch."},{"name":"Green Drake","sci":"Ephemera guttulata","ms":5,"me":6,"ds":25,"de":20,"time":"dusk","tempMin":55,"dry":"Green Drake Comparadun, Coffin Fly Spinner","nymph":"Wiggle Nymph, Drake Nymph","size":"#8-10","note":"Premier hatch on the Delaware. Main stem and East Branch see the best activity."},{"name":"Brown Drake","sci":"Ephemera simulans","ms":5,"me":6,"ds":28,"de":20,"time":"dusk","tempMin":58,"dry":"Brown Drake, Brown Wulff","nymph":"Brown Drake Nymph","size":"#10-12","note":"Overlaps with Green Drake on silty slower sections. Less predictable but brings up big fish."},{"name":"Sulphur","sci":"Ephemerella dorothea","ms":5,"me":9,"ds":20,"de":15,"time":"dusk","tempMin":56,"dry":"Sulphur Sparkle Dun, Parachute Sulphur, Comparadun","nymph":"Sulphur Nymph","size":"#16-18","note":"The Delaware's most important and longest hatch. Mid-June through early September on the West Branch tailwater."},{"name":"Isonychia","sci":"Isonychia bicolor","ms":6,"me":10,"ds":1,"de":31,"time":"evening","tempMin":58,"dry":"Slate Drake, Dun Variant, Isonychia Spinner","nymph":"Isonychia Nymph","size":"#10-12","note":"Strong swimmer - swing the nymph. One of the most consistent evening hatches on the West Branch."},{"name":"Trico","sci":"Tricorythodes sp.","ms":7,"me":9,"ds":1,"de":30,"time":"morning","tempMin":60,"dry":"Trico Spinner, CDC Trico","nymph":"Trico Nymph","size":"#22-26","note":"Morning spinner falls in the Lordville-Long Eddy stretch. Requires fine tippet."},{"name":"Light Cahill","sci":"Stenacron interpunctatum","ms":6,"me":9,"ds":1,"de":30,"time":"evening","tempMin":58,"dry":"Light Cahill, Comparadun","nymph":"Hare's Ear","size":"#14-16","note":"Consistent summer evening hatch throughout the Delaware system."},{"name":"White Fly","sci":"Ephoron leukon","ms":8,"me":9,"ds":5,"de":15,"time":"night","tempMin":65,"dry":"White Wulff, White Elk Hair","nymph":"White Soft Hackle","size":"#12-14","note":"Late summer spectacle on slower Delaware sections. Short intense evening window."},{"name":"Terrestrials","sci":"Ants, Beetles, Hoppers","ms":6,"me":9,"ds":15,"de":30,"time":"afternoon","tempMin":62,"dry":"Foam Hopper, Ant, Beetle","nymph":"None","size":"#10-16","note":"Summer subsidy fishing between hatches. Delaware meadow sections are hopper country in July-August."},{"name":"Autumn Caddis","sci":"Neophylax sp.","ms":9,"me":11,"ds":1,"de":15,"time":"afternoon","tempMin":46,"dry":"Elk Hair Caddis, Orange Stimulator","nymph":"Caddis Pupa","size":"#12-14","note":"Good fall hatch throughout the Delaware system."},{"name":"Blue-Winged Olive (Fall)","sci":"Baetis sp.","ms":9,"me":11,"ds":1,"de":30,"time":"afternoon","tempMin":44,"dry":"Parachute BWO, Sparkle Dun","nymph":"Pheasant Tail","size":"#18-22","note":"Important fall hatch. West Branch tailwater fishes well into November on cloudy days."}],"catskill":[{"name":"Midge","sci":"Chironomidae","ms":1,"me":12,"ds":1,"de":31,"time":"morning","tempMin":34,"dry":"Griffith's Gnat, CDC Midge","nymph":"Zebra Midge, Brassie","size":"#22-26","note":"Year-round. Winter midging on the Beaverkill and Neversink can produce surface action."},{"name":"Early Black Stonefly","sci":"Allocapnia sp.","ms":2,"me":4,"ds":15,"de":15,"time":"afternoon","tempMin":38,"dry":"Black Elk Hair, Black Stimulator","nymph":"Black Stonefly Nymph","size":"#16-18","note":"First hatch of the Catskill season."},{"name":"Blue-Winged Olive","sci":"Baetis tricaudatus","ms":3,"me":5,"ds":15,"de":31,"time":"afternoon","tempMin":42,"dry":"Parachute BWO, Sparkle Dun","nymph":"Pheasant Tail, RS2","size":"#18-20","note":"Pre-Hendrickson BWOs. Strong on the Neversink and lower Beaverkill."},{"name":"Quill Gordon","sci":"Epeorus pleuralis","ms":4,"me":4,"ds":5,"de":30,"time":"afternoon","tempMin":46,"dry":"Quill Gordon (Catskill tie), Adams","nymph":"Hare's Ear, Quill Gordon Nymph","size":"#14","note":"The iconic first hatch of the Catskills. Theodore Gordon's signature pattern."},{"name":"Hendrickson","sci":"Ephemerella subvaria","ms":4,"me":5,"ds":15,"de":10,"time":"afternoon","tempMin":48,"dry":"Hendrickson, Red Quill","nymph":"Hare's Ear, Soft Hackle Emerger","size":"#12-14","note":"The most celebrated Catskill hatch. Mid-afternoon on the Beaverkill and Willowemoc."},{"name":"Grannom Caddis","sci":"Brachycentrus sp.","ms":4,"me":5,"ds":15,"de":20,"time":"afternoon","tempMin":46,"dry":"Elk Hair Caddis, X-Caddis, Sparkle Pupa","nymph":"Green Rock Worm","size":"#14-16","note":"Heavy caddis activity on all Catskill streams in late April. Pupae are deadly swung near the surface."},{"name":"March Brown","sci":"Maccaffertium vicarium","ms":5,"me":6,"ds":1,"de":10,"time":"afternoon","tempMin":52,"dry":"March Brown, American March Brown","nymph":"March Brown Nymph","size":"#10-12","note":"Big flies, aggressive rises. Afternoon emergence on the Beaverkill and Willowemoc."},{"name":"Green Drake","sci":"Ephemera guttulata","ms":5,"me":6,"ds":25,"de":15,"time":"dusk","tempMin":55,"dry":"Green Drake Comparadun, Coffin Fly Spinner, Wulff","nymph":"Drake Wiggle Nymph","size":"#8-10","note":"The Catskill event of the year on the Beaverkill. Dusk emergence. Less reliable on the Esopus due to portal releases."},{"name":"Sulphur","sci":"Ephemerella dorothea","ms":5,"me":8,"ds":20,"de":31,"time":"dusk","tempMin":56,"dry":"Sulphur Comparadun, CDC Sulphur","nymph":"Sulphur Nymph, Sparkle Pupa","size":"#16-18","note":"Long reliable evening hatch throughout the Catskills. Fish become highly selective by July."},{"name":"Isonychia","sci":"Isonychia bicolor","ms":5,"me":10,"ds":15,"de":31,"time":"evening","tempMin":56,"dry":"Slate Drake, Dun Variant, Isonychia Parachute","nymph":"Isonychia Nymph","size":"#10-12","note":"Important Catskill hatch from late spring through fall. The Esopus is famous for its Isonychia."},{"name":"Light Cahill","sci":"Stenacron interpunctatum","ms":6,"me":8,"ds":1,"de":31,"time":"evening","tempMin":58,"dry":"Light Cahill, Catskill Light Cahill","nymph":"Hare's Ear","size":"#14-16","note":"Summer evening staple throughout the Catskills."},{"name":"Trico","sci":"Tricorythodes sp.","ms":7,"me":9,"ds":1,"de":30,"time":"morning","tempMin":58,"dry":"Trico Spinner, CDC Trico","nymph":"Trico Nymph","size":"#22-26","note":"Morning spinner falls on slower Catskill meadow sections. Beaverkill meadows section is excellent."},{"name":"Terrestrials","sci":"Ants, Beetles, Hoppers","ms":6,"me":9,"ds":15,"de":30,"time":"afternoon","tempMin":62,"dry":"Catskill Hopper, Foam Ant, Beetle","nymph":"None","size":"#10-18","note":"Summer between-hatch fishing. Ants are surprisingly effective on selective Catskill trout."},{"name":"Autumn Caddis","sci":"Neophylax sp.","ms":9,"me":11,"ds":1,"de":15,"time":"afternoon","tempMin":46,"dry":"Orange Elk Hair, Orange Stimulator","nymph":"Caddis Pupa","size":"#12-14","note":"October caddis on Catskill streams. Swing wet flies and soft hackles through runs."},{"name":"Blue-Winged Olive (Fall)","sci":"Baetis sp.","ms":9,"me":11,"ds":1,"de":30,"time":"afternoon","tempMin":44,"dry":"Parachute BWO, Comparadun","nymph":"Pheasant Tail, RS2","size":"#18-22","note":"Best fall hatch. Overcast drizzly days. One of the most reliable hatches on the Beaverkill."},{"name":"Mahogany Dun","sci":"Paraleptophlebia sp.","ms":9,"me":10,"ds":1,"de":31,"time":"afternoon","tempMin":48,"dry":"Mahogany Dun, Comparadun","nymph":"Pheasant Tail (dark)","size":"#16-18","note":"Underrated fall mayfly on Catskill streams. Good dry fly action when other hatches have ended."}]}</script>
+<script id="profileData" type="application/json">{"01476480":"freestone_pa","01480000":"freestone_pa","01491000":"limestone","01471000":"limestone","01442500":"freestone_pa","01439500":"delaware","01473000":"freestone_pa","01554000":"limestone","01553500":"limestone","01452500":"freestone_pa","01470500":"freestone_pa","01440400":"freestone_pa","01567000":"freestone_pa","01481000":"freestone_pa","01350000":"catskill","01362500":"catskill","01372500":"freestone_pa","01421000":"delaware","01417000":"delaware","01420500":"catskill","01419500":"catskill","01313500":"catskill","01315000":"catskill","04260500":"catskill","01357500":"catskill","01423000":"catskill"}</script>
 
 <script>
 // ── Gauge config with lat/lon for weather API ─────────────────────────────────
@@ -894,16 +942,106 @@ function addRiver(id) {
 }
 
 
-function openHatchDrawer(siteId, e) { if(e) e.stopPropagation(); alert('Hatch data coming soon!'); }
-function buildHatchCard(h, type) { return ''; }
-function closeHatchDrawer(e) {}
-function updateHatchCounts() {}
 
-function dbg(msg) {
-  const p = document.getElementById('debugPanel');
-  if (p) { p.style.display='block'; p.textContent += msg + '\n'; }
-  console.log('[Current] ' + msg);
+// Load hatch data from JSON tags (safe from JS parser issues)
+var HATCH_DB = {};
+var STREAM_PROFILE_MAP = {};
+try {
+  var hd = document.getElementById('hatchData');
+  var pd = document.getElementById('profileData');
+  if (hd) HATCH_DB = JSON.parse(hd.textContent);
+  if (pd) STREAM_PROFILE_MAP = JSON.parse(pd.textContent);
+} catch(e) { console.log('Hatch data load error:', e); }
+
+function getHatchesForDate(siteId, tempF) {
+  var profile = STREAM_PROFILE_MAP[siteId] || 'freestone_pa';
+  var hatches = HATCH_DB[profile] || [];
+  var now = new Date();
+  var month = now.getMonth() + 1;
+  var day = now.getDate();
+  var active = hatches.filter(function(h) {
+    var inRange = (month > h.ms || (month === h.ms && day >= h.ds)) &&
+                  (month < h.me || (month === h.me && day <= h.de));
+    var tempOk = tempF === null || tempF >= h.tempMin;
+    return inRange && tempOk;
+  });
+  var upcoming = hatches.filter(function(h) {
+    if (active.find(function(a) { return a.name === h.name; })) return false;
+    var hatchStart = new Date(now.getFullYear(), h.ms - 1, h.ds);
+    var diff = (hatchStart - now) / (1000 * 60 * 60 * 24);
+    return diff > 0 && diff <= 30;
+  });
+  return { active: active, upcoming: upcoming, profile: profile };
 }
+
+function openHatchDrawer(siteId, e) {
+  if (e && e.stopPropagation) e.stopPropagation();
+  var gauge = STREAM_LIBRARY.find(function(g) { return g.id === siteId; });
+  if (!gauge) return;
+  var data = gaugeData[siteId] || {};
+  var tempF = data.tempF || null;
+  var result = getHatchesForDate(siteId, tempF);
+  var active = result.active, upcoming = result.upcoming, profile = result.profile;
+  var profileLabels = {limestone:'Limestone / Tailwater',freestone_pa:'Freestone Stream',delaware:'Upper Delaware System',catskill:'Catskill Freestone'};
+  var profileLabel = profileLabels[profile] || '';
+  var dateStr = new Date().toLocaleDateString('en-US', {month:'long', day:'numeric'});
+  document.getElementById('hatchDrawerTitle').textContent = gauge.name + ' Hatches';
+  document.getElementById('hatchDrawerSub').textContent = profileLabel + ' - ' + dateStr + (tempF ? ' - ' + tempF + 'F water' : '');
+  var html = '';
+  if (active.length === 0) {
+    html += '<div class="hatch-empty">No active hatches right now.<br>Try nymphing and streamers.</div>';
+  } else {
+    html += '<div class="hatch-section-label">Hatching Now</div>';
+    html += active.map(function(h) { return buildHatchCard(h, 'active'); }).join('');
+  }
+  if (upcoming.length > 0) {
+    html += '<div class="hatch-section-label" style="margin-top:12px">Coming in 30 Days</div>';
+    html += upcoming.map(function(h) { return buildHatchCard(h, 'upcoming'); }).join('');
+  }
+  html += '<div class="hatch-section-label" style="margin-top:12px">Always Effective</div>';
+  html += '<div class="hatch-card"><div class="hatch-card-top"><div><div class="hatch-name">Subsurface &amp; Streamers</div><div class="hatch-sci">Nymphs, wets, and streamers work year-round</div></div></div><div class="hatch-flies"><div class="hatch-fly-box"><div class="hatch-fly-label">Nymphs</div><div class="hatch-fly-value">Pheasant Tail, Hare's Ear, Zebra Midge</div></div><div class="hatch-fly-box"><div class="hatch-fly-label">Streamers</div><div class="hatch-fly-value">Woolly Bugger, Muddler, Clouser Minnow</div></div></div><div class="hatch-note">When nothing is hatching nymphing 6-18 inches off the bottom is most reliable. In high water switch to streamers.</div></div>';
+  html += '<div style="height:8px"></div>';
+  document.getElementById('hatchDrawerContent').innerHTML = html;
+  document.getElementById('hatchDrawerOverlay').classList.add('open');
+}
+
+function buildHatchCard(h, type) {
+  var timeLabels = {morning:'Morning',afternoon:'Afternoon',evening:'Evening',dusk:'Dusk',night:'Night',all:'All Day'};
+  var timeLabel = timeLabels[h.time] || h.time;
+  var tempChip = h.tempMin > 34 ? '<div class="hatch-temp-chip">Triggers at ' + h.tempMin + 'F+</div>' : '';
+  return '<div class="hatch-card ' + type + '-hatch">' +
+    '<div class="hatch-card-top">' +
+      '<div><div class="hatch-name">' + h.name + '</div><div class="hatch-sci">' + h.sci + '</div></div>' +
+      '<div><div class="hatch-time-badge">' + timeLabel + '</div>' +
+      '<div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--ink-light);text-align:right;margin-top:4px">' + h.size + '</div></div>' +
+    '</div>' +
+    '<div class="hatch-flies">' +
+      '<div class="hatch-fly-box"><div class="hatch-fly-label">Dry Fly</div><div class="hatch-fly-value">' + h.dry + '</div></div>' +
+      '<div class="hatch-fly-box"><div class="hatch-fly-label">Nymph / Wet</div><div class="hatch-fly-value">' + h.nymph + '</div></div>' +
+    '</div>' +
+    '<div class="hatch-note">' + h.note + '</div>' +
+    tempChip +
+  '</div>';
+}
+
+function closeHatchDrawer(e) {
+  if (e.target === document.getElementById('hatchDrawerOverlay'))
+    document.getElementById('hatchDrawerOverlay').classList.remove('open');
+}
+
+function updateHatchCounts() {
+  getActiveGauges().forEach(function(gauge) {
+    var badge = document.getElementById('hcount-' + gauge.id);
+    if (!badge) return;
+    var data = gaugeData[gauge.id] || {};
+    var result = getHatchesForDate(gauge.id, data.tempF || null);
+    var count = result.active.length;
+    badge.textContent = count ? count + ' active' : 'see hatches';
+    badge.style.background = count ? '#f0c020' : '#e0dcd4';
+    badge.style.color = count ? '#5a4000' : 'var(--ink-light)';
+  });
+}
+
 
 async function loadAllGauges() {
   const icon = document.getElementById('refreshIcon');
@@ -911,26 +1049,19 @@ async function loadAllGauges() {
   document.getElementById('updateText').textContent = 'Loading...';
   document.getElementById('statusDot').style.background = '#f0a820';
 
-  dbg('STREAM_LIBRARY: ' + (typeof STREAM_LIBRARY !== 'undefined' ? STREAM_LIBRARY.length + ' entries' : 'UNDEFINED'));
-  dbg('DEFAULT_IDS: ' + (typeof DEFAULT_IDS !== 'undefined' ? DEFAULT_IDS.length + ' ids' : 'UNDEFINED'));
 
   // Get active gauges — with safety net
   let active = getActiveGauges();
-  dbg('activeIds: ' + JSON.stringify(activeIds));
-  dbg('getActiveGauges: ' + active.length + ' gauges');
 
   if (active.length === 0) {
-    dbg('RESET to defaults');
     activeIds = [...DEFAULT_IDS];
     saveActiveIds();
     active = getActiveGauges();
-    dbg('After reset: ' + active.length + ' gauges');
   }
 
   // Show skeletons while loading
   const paG = active.filter(g => g.state === 'PA');
   const nyG = active.filter(g => g.state === 'NY');
-  dbg('PA: ' + paG.length + ', NY: ' + nyG.length);
   document.getElementById('paList').innerHTML = paG.map(renderSkeleton).join('');
   document.getElementById('nyList').innerHTML = nyG.map(renderSkeleton).join('');
   document.getElementById('paCount').textContent = paG.length + ' gauges';
@@ -946,7 +1077,6 @@ async function loadAllGauges() {
 
   // Render everything
   const successCount = active.filter(g => gaugeData[g.id] && !gaugeData[g.id].error).length;
-  dbg('Fetch done. Success: ' + successCount + '/' + active.length);
   renderAll();
   updateHatchCounts();
 
