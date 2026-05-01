@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Current · River Monitor v6.1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f2ed; --bg-card: #ffffff; --bg-section: #eceae4;
+    --ink: #1a1a18; --ink-mid: #444440; --ink-light: #888880; --ink-faint: #c0bdb6;
+    --safe: #1a7a4a; --safe-bg: #e8f7ee; --safe-border: #a8dfc0;
+    --caution: #a05c00; --caution-bg: #fff4e0; --caution-border: #f0c060;
+    --danger: #c0200c; --danger-bg: #fdecea; --danger-border: #f0a090;
+    --accent: #2060c0; --accent-bg: #e8f0fc; --border: #dedad2;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.05);
+    --rain: #3a7fc0;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  body { font-family:'IBM Plex Sans',sans-serif; background:var(--bg); color:var(--ink); min-height:100vh; overflow-x:hidden; }
+  .app { max-width:430px; margin:0 auto; padding-bottom:90px; }
+
+  /* Header */
+  header { background:var(--ink); padding:52px 20px 0; position:sticky; top:0; z-index:40; }
+  .header-inner { display:flex; align-items:center; justify-content:space-between; padding-bottom:14px; }
+  .logo-group { display:flex; align-items:center; gap:10px; }
+  .logo-mark { width:36px; height:36px; background:#2a7fff; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; }
+  .app-name { font-family:'Bitter',serif; font-size:22px; font-weight:700; color:#fff; letter-spacing:-0.3px; }
+  .app-sub { font-family:'IBM Plex Mono',monospace; font-size:10px; color:#8890a0; letter-spacing:1px; text-transform:uppercase; margin-top:1px; }
+  .status-pill { display:flex; align-items:center; gap:5px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.12); border-radius:20px; padding:5px 10px; font-family:'IBM Plex Mono',monospace; font-size:10px; color:#8890a0; }
+  .pulse-dot { width:6px; height:6px; border-radius:50%; background:#40c070; flex-shrink:0; animation:pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;}50%{opacity:0.3;} }
+
+  /* Tabs */
+  .tabs-bar { display:flex; gap:6px; padding:0 0 14px; }
+  .tab { flex:1; padding:9px 8px; background:rgba(255,255,255,0.07); border:1px solid rgba(255,255,255,0.1); border-radius:8px; color:#8890a0; font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:500; letter-spacing:0.5px; text-transform:uppercase; cursor:pointer; transition:all 0.15s; }
+  .tab.active { background:#2a7fff; border-color:#2a7fff; color:#fff; }
+
+  /* Legend */
+  .legend-bar { display:flex; margin:14px 12px 0; border-radius:10px; overflow:hidden; border:1px solid var(--border); }
+  .legend-item { flex:1; padding:8px 6px; display:flex; align-items:center; justify-content:center; gap:5px; font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:500; letter-spacing:0.5px; }
+  .legend-item:not(:last-child) { border-right:1px solid var(--border); }
+  .li-safe { background:var(--safe-bg); color:var(--safe); }
+  .li-caution { background:var(--caution-bg); color:var(--caution); }
+  .li-danger { background:var(--danger-bg); color:var(--danger); }
+  .legend-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+
+  /* Toolbar */
+  .toolbar { display:flex; align-items:center; justify-content:space-between; padding:14px 16px 4px; }
+  .section-label { font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:500; letter-spacing:2px; text-transform:uppercase; color:var(--ink-light); }
+  .refresh-btn { display:flex; align-items:center; gap:5px; background:var(--accent-bg); border:1px solid #c0d4f8; border-radius:20px; padding:6px 12px; font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:500; color:var(--accent); cursor:pointer; transition:background 0.15s; }
+  .refresh-btn:active { background:#d0e0fc; }
+  .spin { animation:spin 1s linear infinite; display:inline-block; }
+  @keyframes spin { to{transform:rotate(360deg);} }
+
+  /* Section headers */
+  .section-head { display:flex; align-items:center; justify-content:space-between; padding:16px 16px 8px; }
+  .section-title { font-family:'Bitter',serif; font-size:17px; font-weight:700; color:var(--ink); }
+  .gauge-count { font-family:'IBM Plex Mono',monospace; font-size:11px; color:var(--ink-light); background:var(--bg-section); padding:3px 8px; border-radius:10px; }
+
+  /* River cards */
+  .river-list { padding:0 12px; display:flex; flex-direction:column; gap:10px; }
+  .river-card { background:var(--bg-card); border-radius:14px; border:1px solid var(--border); box-shadow:var(--shadow); overflow:hidden; cursor:pointer; transition:transform 0.15s, box-shadow 0.15s; }
+  .river-card:active { transform:scale(0.985); box-shadow:none; }
+  .card-status-bar { height:5px; }
+  .bar-safe{background:var(--safe);} .bar-caution{background:#f0a820;} .bar-danger{background:var(--danger);} .bar-loading{background:var(--ink-faint);}
+  .card-body { padding:14px 16px 16px; }
+
+  /* Card top row */
+  .card-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px; }
+  .river-name { font-family:'Bitter',serif; font-size:17px; font-weight:700; color:var(--ink); line-height:1.2; }
+  .river-location { font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--ink-light); margin-top:3px; }
+  .safety-badge { padding:5px 11px; border-radius:20px; font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:500; letter-spacing:0.5px; text-transform:uppercase; white-space:nowrap; flex-shrink:0; margin-left:8px; border:1px solid; }
+  .badge-safe{background:var(--safe-bg);color:var(--safe);border-color:var(--safe-border);}
+  .badge-caution{background:var(--caution-bg);color:var(--caution);border-color:var(--caution-border);}
+  .badge-danger{background:var(--danger-bg);color:var(--danger);border-color:var(--danger-border);}
+  .badge-loading{background:var(--bg-section);color:var(--ink-light);border-color:var(--border);}
+
+  /* Metrics row — now 3 columns */
+  .metrics-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:7px; margin-bottom:10px; }
+  .metric-box { background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:9px 10px; }
+  .metric-label { font-family:'IBM Plex Mono',monospace; font-size:9px; font-weight:500; color:var(--ink-light); letter-spacing:1px; text-transform:uppercase; margin-bottom:4px; }
+  .metric-value { font-family:'IBM Plex Mono',monospace; font-size:clamp(15px,4.5vw,19px); font-weight:500; color:var(--ink); line-height:1; display:flex; align-items:baseline; gap:4px; }
+  .trend-arrow { font-size:13px; font-weight:700; }
+  .trend-up { color:var(--danger); }
+  .trend-down { color:var(--safe); }
+  .trend-stable { color:var(--ink-faint); }
+  .metric-unit { font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--ink-light); margin-top:3px; }
+  .temp-cold { color:#2060c0; }
+  .temp-warm { color:#c06020; }
+
+  /* Sparkline */
+  .chart-wrap { margin-bottom:10px; background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:10px 12px 8px; }
+  .chart-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+  .chart-label { font-family:'IBM Plex Mono',monospace; font-size:9px; font-weight:500; color:var(--ink-light); letter-spacing:1px; text-transform:uppercase; }
+  .chart-legend { display:flex; align-items:center; gap:10px; }
+  .chart-legend-item { display:flex; align-items:center; gap:4px; font-family:'IBM Plex Mono',monospace; font-size:9px; color:var(--ink-light); }
+  .sparkline-svg { width:100%; display:block; }
+  .chart-date-row { display:flex; justify-content:space-between; margin-top:5px; font-family:'IBM Plex Mono',monospace; font-size:8px; color:var(--ink-faint); }
+  .chart-loading { height:60px; display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--ink-faint); }
+
+  /* Rain forecast bar */
+  .rain-wrap { margin-bottom:10px; background:var(--bg); border:1px solid var(--border); border-radius:10px; padding:10px 12px 8px; }
+  .rain-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+  .rain-label { font-family:'IBM Plex Mono',monospace; font-size:9px; font-weight:500; color:var(--ink-light); letter-spacing:1px; text-transform:uppercase; }
+  .rain-total-badge { font-family:'IBM Plex Mono',monospace; font-size:9px; padding:2px 7px; border-radius:10px; border:1px solid; }
+  .rain-total-dry { background:#f0f4f0; color:#507050; border-color:#b0d0b0; }
+  .rain-total-light { background:#e8f0fc; color:#2060c0; border-color:#a0c0f0; }
+  .rain-total-heavy { background:#fdecea; color:#c0200c; border-color:#f0a090; }
+  .rain-bars { display:flex; align-items:flex-end; gap:2px; height:40px; }
+  .rain-bar-col { display:flex; flex-direction:column; align-items:center; flex:1; height:100%; justify-content:flex-end; }
+  .rain-bar { width:100%; border-radius:2px 2px 0 0; min-height:1px; transition:height 0.4s ease; }
+  .rain-time-row { display:flex; justify-content:space-between; margin-top:4px; font-family:'IBM Plex Mono',monospace; font-size:8px; color:var(--ink-faint); }
+
+  /* Wading strip */
+  .wading-strip { display:flex; align-items:flex-start; gap:8px; padding:9px 11px; border-radius:8px; border:1px solid; font-size:12px; line-height:1.5; font-weight:500; }
+  .wading-strip.safe{background:var(--safe-bg);border-color:var(--safe-border);color:var(--safe);}
+  .wading-strip.caution{background:var(--caution-bg);border-color:var(--caution-border);color:var(--caution);}
+  .wading-strip.danger{background:var(--danger-bg);border-color:var(--danger-border);color:var(--danger);}
+  .wading-strip.unknown{background:var(--bg-section);border-color:var(--border);color:var(--ink-light);}
+  .wading-icon { font-size:14px; flex-shrink:0; margin-top:1px; }
+
+  /* Skeleton */
+  .skeleton { background:linear-gradient(90deg,#e8e4dc 25%,#f0ece4 50%,#e8e4dc 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; border-radius:6px; }
+  @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+  .sk-name{height:20px;width:60%;margin-bottom:6px;} .sk-loc{height:11px;width:40%;margin-bottom:14px;} .sk-box{height:52px;border-radius:10px;} .sk-chart{height:80px;border-radius:10px;margin-bottom:10px;} .sk-rain{height:64px;border-radius:10px;margin-bottom:10px;}
+
+  /* Modal */
+  .modal-overlay { position:fixed; inset:0; z-index:100; background:rgba(20,20,18,0.6); backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); display:none; align-items:flex-end; }
+  .modal-overlay.open { display:flex; }
+  .modal { width:100%; max-width:430px; margin:0 auto; background:var(--bg-card); border-radius:20px 20px 0 0; padding:16px 20px calc(40px + env(safe-area-inset-bottom)); animation:slide-up 0.28s cubic-bezier(0.34,1.4,0.64,1); max-height:88vh; overflow-y:auto; }
+  @keyframes slide-up{from{transform:translateY(100%)}to{transform:translateY(0)}}
+  .modal-handle { width:36px; height:4px; background:var(--ink-faint); border-radius:4px; margin:0 auto 18px; }
+  .modal-river-name { font-family:'Bitter',serif; font-size:24px; font-weight:700; color:var(--ink); margin-bottom:3px; }
+  .modal-location { font-family:'IBM Plex Mono',monospace; font-size:10px; color:var(--ink-light); letter-spacing:0.5px; margin-bottom:18px; }
+  .modal-metrics { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:16px; }
+  .modal-metric { background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:14px; }
+  .modal-metric .metric-value { font-size:22px; }
+  .modal-safety { padding:14px 16px; border-radius:12px; border:1px solid; margin-bottom:14px; }
+  .modal-safety.safe{background:var(--safe-bg);border-color:var(--safe-border);}
+  .modal-safety.caution{background:var(--caution-bg);border-color:var(--caution-border);}
+  .modal-safety.danger{background:var(--danger-bg);border-color:var(--danger-border);}
+  .modal-safety.unknown{background:var(--bg-section);border-color:var(--border);}
+  .modal-safety-title { font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:500; letter-spacing:1.5px; text-transform:uppercase; margin-bottom:5px; }
+  .safe .modal-safety-title{color:var(--safe);} .caution .modal-safety-title{color:var(--caution);} .danger .modal-safety-title{color:var(--danger);} .unknown .modal-safety-title{color:var(--ink-light);}
+  .modal-safety-text { font-size:13px; line-height:1.6; color:var(--ink-mid); }
+  .modal-notes { background:var(--bg); border:1px solid var(--border); border-radius:12px; padding:14px; margin-bottom:12px; }
+  .notes-label { font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:500; letter-spacing:1.5px; text-transform:uppercase; color:var(--ink-light); margin-bottom:6px; }
+  .notes-text { font-size:13px; line-height:1.65; color:var(--ink-mid); }
+  .usgs-link { display:flex; align-items:center; justify-content:space-between; padding:13px 16px; background:var(--accent-bg); border:1px solid #c0d4f8; border-radius:12px; text-decoration:none; color:var(--accent); font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:500; }
+
+  /* About */
+  .about-wrap { padding:16px; }
+  .about-card { background:var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:18px; margin-bottom:12px; box-shadow:var(--shadow); }
+  .about-title { font-family:'Bitter',serif; font-size:16px; font-weight:700; color:var(--ink); margin-bottom:10px; }
+  .about-body { font-size:13px; line-height:1.7; color:var(--ink-mid); }
+  .thresh-table { width:100%; border-collapse:collapse; margin-top:10px; font-family:'IBM Plex Mono',monospace; font-size:11px; }
+  .thresh-table th { text-align:left; padding:7px 8px; color:var(--ink-light); font-size:9px; letter-spacing:1px; text-transform:uppercase; border-bottom:2px solid var(--border); }
+  .thresh-table td { padding:8px; color:var(--ink-mid); border-bottom:1px solid var(--border); }
+  .thresh-table tr:last-child td { border-bottom:none; }
+  td.t-safe{color:var(--safe);font-weight:500;} td.t-caution{color:var(--caution);font-weight:500;} td.t-danger{color:var(--danger);font-weight:500;}
+
+  /* Bottom nav */
+  .bottom-nav { position:fixed; bottom:0; left:0; right:0; z-index:50; max-width:430px; margin:0 auto; background:var(--bg-card); border-top:1px solid var(--border); padding:10px 20px calc(10px + env(safe-area-inset-bottom)); display:flex; justify-content:space-around; box-shadow:0 -4px 20px rgba(0,0,0,0.08); }
+  .nav-btn { display:flex; flex-direction:column; align-items:center; gap:3px; background:none; border:none; font-family:'IBM Plex Mono',monospace; font-size:9px; letter-spacing:1px; text-transform:uppercase; color:var(--ink-light); cursor:pointer; padding:6px 20px; transition:color 0.15s; }
+  .nav-btn.active { color:var(--accent); }
+  .nav-icon { font-size:20px; }
+  .view{display:none;}.view.active{display:block;}
+  /* Hatch drawer */
+  .hatch-drawer-overlay{position:fixed;inset:0;z-index:300;background:rgba(20,20,18,0.65);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:none;align-items:flex-end;}
+  .hatch-drawer-overlay.open{display:flex;}
+  .hatch-drawer{width:100%;max-width:430px;margin:0 auto;background:var(--bg-card);border-radius:20px 20px 0 0;padding:16px 0 calc(24px + env(safe-area-inset-bottom));animation:slide-up 0.28s cubic-bezier(0.34,1.4,0.64,1);max-height:90vh;display:flex;flex-direction:column;}
+  .hatch-drawer-head{display:flex;align-items:flex-start;justify-content:space-between;padding:0 20px;margin-bottom:4px;flex-shrink:0;}
+  .hatch-drawer-title{font-family:'Bitter',serif;font-size:19px;font-weight:700;color:var(--ink);}
+  .hatch-drawer-sub{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-light);margin-top:3px;letter-spacing:0.3px;}
+  .hatch-close-btn{background:var(--bg-section);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-light);cursor:pointer;flex-shrink:0;margin-left:12px;margin-top:2px;}
+  .hatch-scroll{overflow-y:auto;flex:1;padding:12px 12px 0;}
+
+  /* Active hatch card */
+  .hatch-section-label{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--ink-light);padding:6px 4px 8px;}
+  .hatch-card{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:13px 14px;margin-bottom:8px;}
+  .hatch-card.active-hatch{border-color:#a8dfc0;background:var(--safe-bg);}
+  .hatch-card.upcoming-hatch{border-color:#f0c060;background:var(--caution-bg);}
+  .hatch-card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;}
+  .hatch-name{font-family:'Bitter',serif;font-size:15px;font-weight:700;color:var(--ink);}
+  .hatch-sci{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--ink-light);margin-top:2px;}
+  .hatch-time-badge{font-family:'IBM Plex Mono',monospace;font-size:9px;padding:3px 8px;border-radius:10px;background:rgba(32,96,192,0.1);color:var(--accent);border:1px solid rgba(32,96,192,0.2);white-space:nowrap;flex-shrink:0;margin-left:8px;}
+  .hatch-flies{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;}
+  .hatch-fly-box{background:var(--bg-card);border:1px solid var(--border);border-radius:8px;padding:8px 10px;}
+  .hatch-fly-label{font-family:'IBM Plex Mono',monospace;font-size:8px;font-weight:500;letter-spacing:1px;text-transform:uppercase;color:var(--ink-light);margin-bottom:3px;}
+  .hatch-fly-value{font-size:12px;color:var(--ink-mid);line-height:1.4;}
+  .hatch-size{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--accent);font-weight:500;}
+  .hatch-note{font-size:11px;color:var(--ink-light);line-height:1.5;border-top:1px solid var(--border);padding-top:7px;margin-top:2px;}
+  .hatch-temp-chip{display:inline-flex;align-items:center;gap:4px;font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--ink-light);background:var(--bg-section);border:1px solid var(--border);border-radius:10px;padding:2px 7px;margin-top:6px;}
+
+  /* Hatch button on card */
+  .hatch-btn{display:flex;align-items:center;gap:5px;background:#fff8e8;border:1px solid #f0d060;border-radius:8px;padding:8px 12px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;color:#806000;cursor:pointer;width:100%;margin-top:8px;transition:background 0.15s;text-align:left;}
+  .hatch-btn:active{background:#f0e8c0;}
+  .hatch-btn-count{background:#f0c020;color:#5a4000;border-radius:10px;padding:1px 7px;font-size:9px;margin-left:auto;}
+  .hatch-empty{text-align:center;padding:24px 16px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-faint);}
+
+  /* Edit mode & remove button */
+  .toolbar-right{display:flex;gap:8px;align-items:center;}
+  .edit-btn{display:flex;align-items:center;gap:5px;background:var(--bg-section);border:1px solid var(--border);border-radius:20px;padding:6px 12px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;color:var(--ink-light);cursor:pointer;transition:all 0.15s;}
+  .edit-btn.active{background:#fff0e0;border-color:#f0c060;color:#a05c00;}
+  .river-card{position:relative;}
+
+  /* Add rivers drawer */
+  .drawer-overlay{position:fixed;inset:0;z-index:200;background:rgba(20,20,18,0.6);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:none;align-items:flex-end;}
+  .drawer-overlay.open{display:flex;}
+  .drawer{width:100%;max-width:430px;margin:0 auto;background:var(--bg-card);border-radius:20px 20px 0 0;padding:16px 0 calc(20px + env(safe-area-inset-bottom));animation:slide-up 0.28s cubic-bezier(0.34,1.4,0.64,1);max-height:82vh;display:flex;flex-direction:column;}
+  .drawer-handle{width:36px;height:4px;background:var(--ink-faint);border-radius:4px;margin:0 auto 14px;flex-shrink:0;}
+  .drawer-title{font-family:'Bitter',serif;font-size:18px;font-weight:700;color:var(--ink);padding:0 20px;margin-bottom:10px;flex-shrink:0;}
+  .drawer-search{margin:0 12px 8px;padding:10px 14px;background:var(--bg);border:1px solid var(--border);border-radius:10px;font-family:'IBM Plex Mono',monospace;font-size:13px;color:var(--ink);outline:none;flex-shrink:0;}
+  .drawer-search:focus{border-color:var(--accent);}
+  .drawer-tabs{display:flex;gap:6px;padding:0 12px 8px;flex-shrink:0;}
+  .drawer-tab{flex:1;padding:7px 6px;background:var(--bg-section);border:1px solid var(--border);border-radius:8px;color:var(--ink-light);font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;text-transform:uppercase;cursor:pointer;transition:all 0.15s;}
+  .drawer-tab.active{background:var(--accent-bg);border-color:#c0d4f8;color:var(--accent);}
+  .drawer-list{overflow-y:auto;flex:1;padding:0 12px;}
+  .drawer-item{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;}
+  .drawer-item-name{font-family:'Bitter',serif;font-size:15px;font-weight:600;color:var(--ink);}
+  .drawer-item-loc{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--ink-light);margin-top:2px;}
+  .drawer-add-btn{padding:6px 14px;border-radius:20px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:500;cursor:pointer;white-space:nowrap;border:1px solid;transition:all 0.15s;flex-shrink:0;margin-left:10px;}
+  .btn-add{background:var(--accent-bg);border-color:#c0d4f8;color:var(--accent);}
+  .btn-add:active{background:#d0e0fc;}
+  .btn-added{background:var(--safe-bg);border-color:var(--safe-border);color:var(--safe);cursor:default;}
+  .drawer-empty{text-align:center;padding:30px 20px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-faint);}
+  .drawer-section-label{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--ink-light);padding:4px 2px 8px;margin-top:2px;}
+  .drawer-item-active{border-color:var(--safe-border);background:var(--safe-bg);}
+  .drawer-item-active .drawer-item-name{color:var(--safe);}
+  .drawer-item-active .drawer-item-loc{color:#6aaa88;}
+  .btn-remove{background:#fdecea;border-color:var(--danger-border);color:var(--danger);}
+  .btn-remove:active{background:#fad4d0;}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="header-inner">
+      <div class="logo-group">
+        <div class="logo-mark">〜</div>
+        <div>
+          <div class="app-name">Current <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:400;color:#5870a0;letter-spacing:0.5px;vertical-align:middle;">v6.1</span></div>
+          <div class="app-sub">PA &amp; NY River Monitor</div>
+        </div>
+      </div>
+      <div class="status-pill">
+        <div class="pulse-dot" id="statusDot"></div>
+        <span id="updateText">Loading…</span>
+      </div>
+    </div>
+    <div class="tabs-bar">
+      <button class="tab active" onclick="filterState('ALL',this)">All Rivers</button>
+      <button class="tab" onclick="filterState('PA',this)">Pennsylvania</button>
+      <button class="tab" onclick="filterState('NY',this)">New York</button>
+    </div>
+  </header>
+
+  <div id="debugPanel" style="display:none;background:#1a1a18;color:#40c070;font-family:monospace;font-size:11px;padding:10px 16px;margin:8px 12px;border-radius:8px;white-space:pre-wrap;line-height:1.6;"></div>
+<div id="riverView" class="view active">
+    <div class="legend-bar">
+      <div class="legend-item li-safe"><div class="legend-dot" style="background:var(--safe)"></div>Safe</div>
+      <div class="legend-item li-caution"><div class="legend-dot" style="background:#f0a820"></div>Caution</div>
+      <div class="legend-item li-danger"><div class="legend-dot" style="background:var(--danger)"></div>Danger</div>
+    </div>
+    <div class="toolbar">
+      <span class="section-label" id="toolbarLabel">All Rivers</span>
+      <div class="toolbar-right">
+        <button class="edit-btn" id="editBtn" onclick="toggleEditMode()">⊕ Rivers</button>
+        <button class="refresh-btn" onclick="loadAllGauges()"><span id="refreshIcon">↻</span> Refresh</button>
+      </div>
+    </div>
+    <div id="paSection">
+      <div class="section-head"><div class="section-title">Pennsylvania</div><div class="gauge-count" id="paCount"></div></div>
+      <div class="river-list" id="paList"></div>
+    </div>
+    <div style="height:10px"></div>
+    <div id="nySection">
+      <div class="section-head"><div class="section-title">New York</div><div class="gauge-count" id="nyCount"></div></div>
+      <div class="river-list" id="nyList"></div>
+    </div>
+    <div style="height:16px"></div>
+  </div>
+
+  <div id="aboutView" class="view">
+    <div class="about-wrap">
+      <div class="about-card">
+        <div class="about-title">How Safety Is Assessed</div>
+        <div class="about-body">Current uses real-time USGS stream gauge data to evaluate wading safety. Two factors are combined: <strong>flow rate (CFS)</strong> and <strong>gauge height (feet)</strong>. The worst of the two determines the overall rating.</div>
+      </div>
+      <div class="about-card">
+        <div class="about-title">Flow Rate (CFS)</div>
+        <table class="thresh-table">
+          <tr><th>Status</th><th>CFS</th><th>Guidance</th></tr>
+          <tr><td class="t-safe">✓ Safe</td><td>&lt; 300</td><td>Good wading</td></tr>
+          <tr><td class="t-caution">⚠ Caution</td><td>300–800</td><td>Experienced only</td></tr>
+          <tr><td class="t-danger">✕ Danger</td><td>&gt; 800</td><td>Do not wade</td></tr>
+        </table>
+      </div>
+      <div class="about-card">
+        <div class="about-title">Water Temperature Guide</div>
+        <table class="thresh-table">
+          <tr><th>Temp (°F)</th><th>Trout Activity</th></tr>
+          <tr><td>&lt; 40°F</td><td>Sluggish — nymphs near bottom</td></tr>
+          <tr><td>45–55°F</td><td>Ideal — active feeding</td></tr>
+          <tr><td>55–65°F</td><td>Peak — hatches likely</td></tr>
+          <tr><td>65–70°F</td><td>Stressed — fish quickly</td></tr>
+          <tr><td>&gt; 70°F</td><td>Dangerous — do not fish</td></tr>
+        </table>
+      </div>
+      <div class="about-card">
+        <div class="about-title">Important Notes</div>
+        <div class="about-body">Thresholds vary by river. Rain forecast uses Open-Meteo data at each gauge's coordinates. Heavy rain in the next 48 hours typically causes flow rises within 6–24 hours depending on watershed size.<br><br>Data: USGS NWIS (flow, height, temp) + Open-Meteo (rain forecast). Updates every 15 minutes.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <button class="nav-btn active" id="navRivers" onclick="switchView('river')"><span class="nav-icon">〜</span>Rivers</button>
+  <button class="nav-btn" id="navAbout" onclick="switchView('about')"><span class="nav-icon">◎</span>Guide</button>
+</div>
+
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal"><div class="modal-handle"></div><div id="modalBody"></div></div>
+</div>
+
+
+
+<!-- Hatch drawer -->
+<div class="hatch-drawer-overlay" id="hatchDrawerOverlay" onclick="closeHatchDrawer(event)">
+  <div class="hatch-drawer">
+    <div class="drawer-handle"></div>
+    <div class="hatch-drawer-head">
+      <div>
+        <div class="hatch-drawer-title" id="hatchDrawerTitle">Hatches</div>
+        <div class="hatch-drawer-sub" id="hatchDrawerSub"></div>
+      </div>
+      <button class="hatch-close-btn" onclick="document.getElementById('hatchDrawerOverlay').classList.remove('open')">✕ Close</button>
+    </div>
+    <div class="hatch-scroll" id="hatchDrawerContent"></div>
+  </div>
+</div>
+
+<!-- Add rivers drawer -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer(event)">
+  <div class="drawer">
+    <div class="drawer-handle"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:0 20px;margin-bottom:10px;">
+      <div class="drawer-title" style="margin-bottom:0;">Add Rivers</div>
+      <button onclick="toggleEditMode()" style="background:var(--ink);border:none;color:#fff;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;padding:7px 14px;border-radius:20px;cursor:pointer;letter-spacing:0.5px;">✓ Done</button>
+    </div>
+    <input class="drawer-search" id="drawerSearch" type="text" placeholder="Search streams…" oninput="filterDrawer()" autocomplete="off" autocorrect="off" spellcheck="false">
+    <div class="drawer-tabs">
+      <button class="drawer-tab active" onclick="setDrawerState('PA',this)">Pennsylvania</button>
+      <button class="drawer-tab" onclick="setDrawerState('NY',this)">New York</button>
+    </div>
+    <div class="drawer-list" id="drawerList"></div>
+  </div>
+</div>
+
+<script>
+// ── Gauge config with lat/lon for weather API ─────────────────────────────────
+// ── Stream library ───────────────────────────────────────────────────────────
+const STREAM_LIBRARY = [
+  // Pennsylvania
+  { id:'01476480', name:'Ridley Creek',              location:'Media, PA',              state:'PA', safeThreshold:80,   lat:39.917,lon:-75.408, notes:'Ridley Creek State Park. HQ-TSF designated. Best waded below 80 CFS.' },
+  { id:'01480000', name:'Brandywine Creek',           location:'Chadds Ford, PA',        state:'PA', safeThreshold:300,  lat:39.862,lon:-75.591, notes:'Classic smallmouth bass fly water. Many access points in Chester County.' },
+  { id:'01491000', name:'Brandywine Creek (W Branch)',location:'Honey Brook, PA',        state:'PA', safeThreshold:200,  lat:40.057,lon:-75.914, notes:'Excellent limestone creek with wild brook trout.' },
+  { id:'01471000', name:'Tulpehocken Creek',          location:'Near Reading, PA',       state:'PA', safeThreshold:200,  lat:40.336,lon:-76.017, notes:"Class A wild trout below Blue Marsh Dam. Cold tailwater year-round." },
+  { id:'01442500', name:'Brodhead Creek',             location:'Minisink Hills, PA',     state:'PA', safeThreshold:300,  lat:40.998,lon:-75.143, notes:'Pocono trout stream. Rises fast after rain  -  watch levels closely.' },
+  { id:'01439500', name:'Delaware River',             location:'Callicoon, NY/PA border',state:'PA', safeThreshold:1200, lat:41.762,lon:-75.059, notes:'Upper Delaware. Premier trout and shad. Check both PA and NY regs.' },
+  { id:'01473000', name:'Wissahickon Creek',          location:'Wissahickon Valley, PA', state:'PA', safeThreshold:150,  lat:40.072,lon:-75.217, notes:'Urban trout stream in Philadelphia. Stocked seasonally.' },
+  { id:'01554000', name:'Spring Creek',               location:'Bellefonte, PA',         state:'PA', safeThreshold:200,  lat:40.913,lon:-77.779, notes:'World-class limestone spring creek. Often called the best trout stream in PA.' },
+  { id:'01553500', name:'Penns Creek',                location:'Penns Creek, PA',        state:'PA', safeThreshold:400,  lat:40.854,lon:-77.058, notes:'Famous for the Green Drake hatch in late May. Wild trout throughout.' },
+  { id:'01452500', name:'Lehigh River',               location:'Bethlehem, PA',          state:'PA', safeThreshold:400,  lat:40.625,lon:-75.370, notes:'Wild trout fishery above Lehighton. Excellent tailwater below Francis Walter Dam.' },
+  { id:'01470500', name:'Schuylkill River',           location:'Pottstown, PA',          state:'PA', safeThreshold:500,  lat:40.245,lon:-75.649, notes:'Good smallmouth and walleye. Multiple public access points.' },
+  { id:'01440400', name:'Brodhead Creek (Upper)',     location:'Analomink, PA',          state:'PA', safeThreshold:200,  lat:41.036,lon:-75.209, notes:'Upper Brodhead above East Stroudsburg. Smaller stream, wild trout, less pressure.' },
+  { id:'01567000', name:'Juniata River',              location:'Newport, PA',            state:'PA', safeThreshold:800,  lat:40.483,lon:-77.133, notes:'Outstanding smallmouth bass river. Trophy designation on sections near Huntingdon.' },
+  { id:'01481000', name:'West Branch Brandywine',     location:'Coatesville, PA',        state:'PA', safeThreshold:200,  lat:39.984,lon:-75.823, notes:'Wild trout and stocked sections near Coatesville.' },
+  // New York
+  { id:'01350000', name:'Schoharie Creek',            location:'Burtonsville, NY',       state:'NY', safeThreshold:300,  lat:42.503,lon:-74.488, notes:'Major Catskill tributary. Productive wild trout water.' },
+  { id:'01362500', name:'Esopus Creek',               location:'Coldbrook, NY',          state:'NY', safeThreshold:300,  lat:42.009,lon:-74.389, notes:'Legendary Catskill stream. Reservoir releases can cause sudden rises.' },
+  { id:'01372500', name:'Wallkill River',             location:'Gardiner, NY',           state:'NY', safeThreshold:300,  lat:41.685,lon:-74.168, notes:'Slower Hudson Valley river. Good bass and pickerel. Easy wading.' },
+  { id:'01421000', name:'Delaware River (W Branch)',  location:'Hale Eddy, NY',          state:'NY', safeThreshold:800,  lat:41.973,lon:-75.186, notes:'Premier wild trout fishery in the East. Cold Cannonsville releases.' },
+  { id:'01417000', name:'East Branch Delaware',       location:'Harvard, NY',            state:'NY', safeThreshold:500,  lat:42.068,lon:-75.117, notes:'Catskill classic. Tailwater below Pepacton stays cold year-round.' },
+  { id:'01420500', name:'Beaverkill',                 location:'Cooks Falls, NY',        state:'NY', safeThreshold:400,  lat:41.940,lon:-74.987, notes:'Cradle of American fly fishing. Classic dry-fly water with wild browns.' },
+  { id:'01419500', name:'Willowemoc Creek',           location:'Livingston Manor, NY',   state:'NY', safeThreshold:250,  lat:41.902,lon:-74.825, notes:'Classic Catskill tributary joining the Beaverkill at Junction Pool in Roscoe.' },
+  { id:'01313500', name:'Ausable River (W Branch)',   location:'Wilmington, NY',         state:'NY', safeThreshold:400,  lat:44.377,lon:-73.832, notes:'Adirondack wild trout stream. Famous for large wild browns. Cold year-round.' },
+  { id:'01315000', name:'Ausable River (E Branch)',   location:'Ausable Forks, NY',      state:'NY', safeThreshold:350,  lat:44.518,lon:-73.685, notes:'East Branch Ausable. Excellent wild trout in the Adirondacks.' },
+  { id:'04260500', name:'Salmon River',               location:'Pulaski, NY',            state:'NY', safeThreshold:600,  lat:43.568,lon:-76.127, notes:'World-class steelhead and salmon river. Best Oct-Nov for Chinook, spring for steelhead.' },
+  { id:'01357500', name:'Catskill Creek',             location:'Catskill, NY',           state:'NY', safeThreshold:300,  lat:42.213,lon:-73.863, notes:'Catskill tributary of the Hudson. Wild trout in upper reaches.' },
+  { id:'01423000', name:'Neversink River',            location:'Godeffroy, NY',          state:'NY', safeThreshold:350,  lat:41.439,lon:-74.599, notes:'Famous Catskill trout stream. Wild browns and rainbows. Stunning Neversink Gorge.' },
+];
+
+
+// Hatch DB stubbed out for diagnostic
+const HATCH_DB = {};
+const STREAM_PROFILE = {};
+function getHatchesForDate(siteId, tempF) {
+  return { active: [], upcoming: [], profile: 'freestone_pa' };
+}
+
+// Default rivers shown on first load
+const DEFAULT_IDS = [
+  '01476480','01480000','01491000','01471000','01442500','01439500','01473000',
+  '01350000','01362500','01372500','01421000','01417000','01420500','01419500'
+];
+
+function loadActiveIds() {
+  try {
+    const s = localStorage.getItem('currentActiveGauges_v6');
+    if (s) {
+      const parsed = JSON.parse(s);
+      // Validate — only keep IDs that exist in current STREAM_LIBRARY
+      const valid = parsed.filter(id => STREAM_LIBRARY.find(g => g.id === id));
+      if (valid.length > 0) return valid;
+    }
+  } catch(e) {}
+  return [...DEFAULT_IDS];
+}
+function saveActiveIds() {
+  try { localStorage.setItem('currentActiveGauges_v6', JSON.stringify(activeIds)); } catch(e) {}
+}
+
+let activeIds = loadActiveIds();
+// Clear stale v5 localStorage key if present
+try { localStorage.removeItem('currentActiveGauges'); } catch(e) {}
+// Safety net: if somehow activeIds is empty, reset to defaults
+if (!activeIds || activeIds.length === 0) activeIds = [...DEFAULT_IDS];
+let gaugeData = {};
+let currentFilter = 'ALL';
+let editMode = false;
+let drawerState = 'PA';
+
+function getActiveGauges() {
+  return activeIds.map(id => STREAM_LIBRARY.find(g => g.id === id)).filter(Boolean);
+}
+
+
+// ── Safety ────────────────────────────────────────────────────────────────────
+function getSafety(cfs, height) {
+  if (cfs === null && height === null) return { level:'unknown', label:'No Data', color:'loading', cause:'' };
+  let cfsScore = 0, htScore = 0;
+  if (cfs !== null) { if (cfs < 300) cfsScore=0; else if (cfs < 800) cfsScore=1; else cfsScore=2; }
+  if (height !== null) { if (height < 3.0) htScore=0; else if (height < 5.0) htScore=1; else htScore=2; }
+  const score = cfsScore + htScore;
+  let cause = '';
+  if (score > 0) {
+    if (cfsScore > htScore) cause = 'flow rate';
+    else if (htScore > cfsScore) cause = 'gauge height';
+    else cause = 'flow & height';
+  }
+  if (score === 0) return { level:'safe', label:'Safe to Wade', color:'safe', cause:'' };
+  if (score <= 2) return { level:'caution', label:'Use Caution', color:'caution', cause };
+  return { level:'danger', label:'Dangerous', color:'danger', cause };
+}
+
+function getWadingAdvice(safety, cfs, height) {
+  if (safety.level === 'safe') return 'Good wading conditions. Fish are likely active.';
+  if (safety.level === 'danger') {
+    if (safety.cause === 'gauge height') return `Dangerous gauge height (${height !== null ? height.toFixed(2) + ' ft' : 'elevated'}). River may be flooded or backed up. Do not wade.`;
+    if (safety.cause === 'flow rate') return `Dangerous flow rate (${cfs !== null ? cfs.toFixed(0) + ' CFS' : 'high'}). Water is moving too fast to wade safely.`;
+    return 'Dangerous conditions. Do not enter the water. Wait for levels to drop.';
+  }
+  if (safety.level === 'caution') {
+    if (safety.cause === 'gauge height') return `Gauge height is elevated (${height !== null ? height.toFixed(2) + ' ft' : 'above normal'}) even though flow looks manageable. Water may be pooled or backed up. Experienced waders only.`;
+    if (safety.cause === 'flow rate') return `Flow is elevated (${cfs !== null ? cfs.toFixed(0) + ' CFS' : 'above normal'}). Experienced waders only - use a wading staff and scout before crossing.`;
+    return 'Both flow and height are elevated. Experienced waders only. Use a wading staff and scout crossings.';
+  }
+  return 'Data unavailable. Check USGS directly before wading.';
+}
+
+// ── Trend arrow ───────────────────────────────────────────────────────────────
+function getTrend(current, prev) {
+  if (current === null || prev === null) return { arrow:'', cls:'trend-stable' };
+  const pct = (current - prev) / prev;
+  if (pct > 0.05) return { arrow:'^', cls:'trend-up' };
+  if (pct < -0.05) return { arrow:'v', cls:'trend-down' };
+  return { arrow:'>', cls:'trend-stable' };
+}
+
+// ── Temp color ────────────────────────────────────────────────────────────────
+function getTempClass(tempF) {
+  if (tempF === null) return '';
+  return tempF > 65 ? 'temp-warm' : 'temp-cold';
+}
+
+// ── Sparkline ─────────────────────────────────────────────────────────────────
+function buildSparkline(history, safeThreshold, currentCfs, safetyColor) {
+  if (!history || history.length < 2) return '<div class="chart-loading">No historical data</div>';
+  const W=320, H=68, PAD_L=38, PAD_R=8, PAD_T=8, PAD_B=4;
+  const plotW=W-PAD_L-PAD_R, plotH=H-PAD_T-PAD_B;
+  const dataMax = Math.max(...history.map(d=>d.v), safeThreshold*1.1, currentCfs||0);
+  const yMax = dataMax*1.2, yMin=0;
+  const xScale = i => PAD_L+(i/(history.length-1))*plotW;
+  const yScale = v => PAD_T+plotH-((v-yMin)/(yMax-yMin))*plotH;
+  const linePoints = history.map((d,i)=>`${xScale(i).toFixed(1)},${yScale(d.v).toFixed(1)}`).join(' ');
+  const areaPoints = [`${PAD_L},${PAD_T+plotH}`,...history.map((d,i)=>`${xScale(i).toFixed(1)},${yScale(d.v).toFixed(1)}`),`${PAD_L+plotW},${PAD_T+plotH}`].join(' ');
+  const lineColor = safetyColor==='safe'?'#1a7a4a':safetyColor==='caution'?'#d08010':safetyColor==='danger'?'#c0200c':'#888880';
+  const areaColor = safetyColor==='safe'?'rgba(26,122,74,0.08)':safetyColor==='caution'?'rgba(208,128,16,0.08)':safetyColor==='danger'?'rgba(192,32,12,0.1)':'rgba(136,136,128,0.06)';
+  const threshY = yScale(safeThreshold).toFixed(1);
+  const threshLabel = safeThreshold>=1000?`${(safeThreshold/1000).toFixed(1)}k`:`${safeThreshold}`;
+  const lastX = xScale(history.length-1).toFixed(1);
+  const lastY = yScale(history[history.length-1].v).toFixed(1);
+  const maxLabel = yMax>=1000?`${(yMax/1000).toFixed(1)}k`:Math.round(yMax);
+  const maxY = yScale(yMax).toFixed(1);
+  const fmtDate = d => new Date(d.substring(0,10)+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  return `<div class="chart-wrap">
+    <div class="chart-header">
+      <span class="chart-label">14-Day Flow (CFS)</span>
+      <div class="chart-legend">
+        <div class="chart-legend-item"><div style="width:14px;height:2px;background:${lineColor};border-radius:2px"></div><span>Flow</span></div>
+        <div class="chart-legend-item"><div style="width:14px;height:0;border-top:2px dashed #1a7a4a;opacity:0.7"></div><span style="color:#1a7a4a">Safe</span></div>
+      </div>
+    </div>
+    <svg class="sparkline-svg" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none">
+      <text x="${PAD_L-4}" y="${(PAD_T+plotH+3).toFixed(1)}" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="7" fill="#c0bdb6">0</text>
+      <text x="${PAD_L-4}" y="${(parseFloat(threshY)+3).toFixed(1)}" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="7" fill="#1a7a4a">${threshLabel}</text>
+      <text x="${PAD_L-4}" y="${(parseFloat(maxY)+3).toFixed(1)}" text-anchor="end" font-family="IBM Plex Mono,monospace" font-size="7" fill="#c0bdb6">${maxLabel}</text>
+      <line x1="${PAD_L}" y1="${PAD_T}" x2="${PAD_L}" y2="${PAD_T+plotH}" stroke="#dedad2" stroke-width="1"/>
+      <line x1="${PAD_L}" y1="${PAD_T+plotH}" x2="${PAD_L+plotW}" y2="${PAD_T+plotH}" stroke="#dedad2" stroke-width="1"/>
+      <rect x="${PAD_L}" y="${threshY}" width="${plotW}" height="${(PAD_T+plotH-parseFloat(threshY)).toFixed(1)}" fill="rgba(26,122,74,0.05)"/>
+      <polygon points="${areaPoints}" fill="${areaColor}"/>
+      <polyline points="${linePoints}" fill="none" stroke="${lineColor}" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+      <line x1="${PAD_L}" y1="${threshY}" x2="${PAD_L+plotW}" y2="${threshY}" stroke="#1a7a4a" stroke-width="1.2" stroke-dasharray="4,3" opacity="0.7"/>
+      <circle cx="${lastX}" cy="${lastY}" r="3" fill="${lineColor}" stroke="white" stroke-width="1.5"/>
+    </svg>
+    <div class="chart-date-row"><span>${fmtDate(history[0].t)}</span><span>Today</span></div>
+  </div>`;
+}
+
+// ── Rain forecast bars ────────────────────────────────────────────────────────
+function buildRainChart(rainHours) {
+  if (!rainHours || rainHours.length === 0) return '';
+  // Take next 48 hours, group into 6 blocks of 8 hours
+  const blocks = [];
+  for (let i = 0; i < 48; i += 8) {
+    const chunk = rainHours.slice(i, i+8);
+    const total = chunk.reduce((s,v)=>s+(typeof v.mm==='number'&&!isNaN(v.mm)?v.mm:0), 0);
+    const time = chunk[0] ? chunk[0].time : '';
+    blocks.push({ total: total.toFixed(1), time });
+  }
+  const maxMm = Math.max(...blocks.map(b=>parseFloat(b.total)), 0.5);
+  const totalMm = blocks.reduce((s,b)=>s+parseFloat(b.total), 0);
+
+  let badgeClass = 'rain-total-dry', badgeText = 'No rain';
+  if (totalMm > 0.5 && totalMm <= 10) { badgeClass='rain-total-light'; badgeText=`${totalMm.toFixed(1)}mm`; }
+  else if (totalMm > 10) { badgeClass='rain-total-heavy'; badgeText=`${totalMm.toFixed(1)}mm !`; }
+
+  const barHtml = blocks.map(b => {
+    const pct = maxMm > 0 ? (parseFloat(b.total)/maxMm)*100 : 0;
+    const h = Math.max(pct*0.38, parseFloat(b.total)>0?3:0).toFixed(0);
+    const mm = parseFloat(b.total);
+    const col = mm > 5 ? '#c0200c' : mm > 1 ? '#3a7fc0' : '#b0cce8';
+    const label = new Date(b.time).toLocaleTimeString('en-US',{hour:'numeric',hour12:true}).replace(' ','');
+    return `<div class="rain-bar-col"><div class="rain-bar" style="height:${h}px;background:${col}"></div></div>`;
+  }).join('');
+
+  const timeLabels = blocks.map(b => {
+    if (!b.time) return '';
+    return new Date(b.time).toLocaleTimeString('en-US',{hour:'numeric',hour12:true}).replace(' ','').toLowerCase();
+  });
+
+  return `<div class="rain-wrap">
+    <div class="rain-header">
+      <span class="rain-label">Rain Forecast - 48hr</span>
+      <span class="rain-total-badge ${badgeClass}">${badgeText}</span>
+    </div>
+    <div class="rain-bars">${barHtml}</div>
+    <div class="rain-time-row">
+      ${timeLabels.map((t,i)=>`<span>${i===0?'Now':t}</span>`).join('')}
+    </div>
+  </div>`;
+}
+
+// ── Proxy fetch ───────────────────────────────────────────────────────────────
+function fetchWithTimeout(url, ms=6000) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), ms);
+  return fetch(url, {signal: ctrl.signal}).finally(() => clearTimeout(timer));
+}
+
+async function proxyFetch(targetUrl) {
+  // Try direct USGS first (they support CORS on modern endpoints)
+  // Then fall back through multiple proxies
+  const attempts = [
+    () => fetchWithTimeout(targetUrl, 5000),
+    () => fetchWithTimeout(`https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`, 6000),
+    () => fetchWithTimeout(`https://corsproxy.io/?url=${encodeURIComponent(targetUrl)}`, 6000),
+    () => fetchWithTimeout(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`, 6000),
+  ];
+  for (const attempt of attempts) {
+    try {
+      const res = await attempt();
+      if (res && res.ok) return res;
+    } catch(e) { /* try next */ }
+  }
+  throw new Error('All fetch attempts failed');
+}
+
+// ── API fetch ─────────────────────────────────────────────────────────────────
+async function fetchGaugeData(gauge) {
+  const rtTarget = `https://waterservices.usgs.gov/nwis/iv/?format=json&sites=${gauge.id}&parameterCd=00060,00065,00010&siteStatus=active`;
+  const end = new Date(), start = new Date();
+  start.setDate(start.getDate()-14);
+  const fmt = d => d.toISOString().split('T')[0];
+  const histTarget = `https://waterservices.usgs.gov/nwis/dv/?format=json&sites=${gauge.id}&parameterCd=00060&startDT=${fmt(start)}&endDT=${fmt(end)}`;
+  // Open-Meteo: no proxy needed, supports CORS natively
+  const weatherTarget = `https://api.open-meteo.com/v1/forecast?latitude=${gauge.lat}&longitude=${gauge.lon}&hourly=precipitation&forecast_days=3&timezone=America%2FNew_York`;
+
+  try {
+    const [rtRes, histRes, wxRes] = await Promise.all([
+      proxyFetch(rtTarget),
+      proxyFetch(histTarget),
+      fetchWithTimeout(weatherTarget)
+    ]);
+    const rtJson = await rtRes.json();
+    const histJson = await histRes.json();
+    const wxJson = await wxRes.json();
+
+    // Real-time: flow, height, temp, and 3h-ago flow for trend
+    const series = rtJson?.value?.timeSeries || [];
+    let cfs=null, height=null, tempC=null, cfsTime=null, heightTime=null, prevCfs=null;
+    series.forEach(s => {
+      const code = s.variable?.variableCode?.[0]?.value;
+      const vals = s.values?.[0]?.value || [];
+      const valids = vals.filter(v=>v.value!=='-999999'&&v.value!==''&&!isNaN(parseFloat(v.value)));
+      if (!valids.length) return;
+      const latest = valids[0];
+      const val = parseFloat(latest.value);
+      if (code==='00060') {
+        cfs=val; cfsTime=latest.dateTime;
+        // find value ~3 hours ago for trend
+        const threeHrsAgo = new Date(new Date(latest.dateTime).getTime()-3*3600*1000);
+        const older = valids.find(v=>new Date(v.dateTime)<=threeHrsAgo);
+        if (older) prevCfs = parseFloat(older.value);
+      }
+      if (code==='00065') { height=val; heightTime=latest.dateTime; }
+      if (code==='00010') { tempC=val; }
+    });
+
+    // Convert temp C to F
+    const tempF = tempC !== null ? Math.round(tempC*9/5+32) : null;
+
+    // 14-day daily history
+    const histSeries = histJson?.value?.timeSeries||[];
+    let history=[];
+    histSeries.forEach(s=>{
+      const code=s.variable?.variableCode?.[0]?.value;
+      if(code!=='00060') return;
+      const vals=s.values?.[0]?.value||[];
+      history=vals.filter(v=>v.value!=='-999999'&&v.value!==''&&!isNaN(parseFloat(v.value)))
+        .map(v=>({t:v.dateTime,v:parseFloat(v.value)}))
+        .sort((a,b)=>new Date(a.t)-new Date(b.t));
+    });
+
+    // Rain forecast: next 48 hours
+    let rainHours = [];
+    if (wxJson?.hourly?.time && wxJson?.hourly?.precipitation) {
+      const now = new Date();
+      rainHours = wxJson.hourly.time
+        .map((t,i)=>({time:t, mm:wxJson.hourly.precipitation[i]??0}))
+        .filter(r=>new Date(r.time.replace('T',' ')+'Z')>=now)
+        .slice(0,48);
+    }
+
+    return { cfs, height, tempF, cfsTime, heightTime, prevCfs, history, rainHours, error:false };
+  } catch(e) {
+    return { cfs:null, height:null, tempF:null, prevCfs:null, history:[], rainHours:[], error:true };
+  }
+}
+
+// ── Rendering ─────────────────────────────────────────────────────────────────
+function renderSkeleton() {
+  return `<div class="river-card"><div class="card-status-bar bar-loading"></div><div class="card-body">
+    <div class="skeleton sk-name"></div><div class="skeleton sk-loc"></div>
+    <div class="metrics-row"><div class="skeleton sk-box"></div><div class="skeleton sk-box"></div><div class="skeleton sk-box"></div></div>
+    <div class="skeleton sk-chart"></div>
+    <div class="skeleton sk-rain"></div>
+  </div></div>`;
+}
+
+function renderCard(gauge, data) {
+  const {cfs,height,tempF,prevCfs,history,rainHours} = data;
+  const safety = getSafety(cfs,height);
+  const trend = getTrend(cfs,prevCfs);
+  const cfsStr = cfs!==null?cfs.toFixed(0):'--';
+  const htStr = height!==null?height.toFixed(2):'--';
+  const tempStr = tempF!==null?`${tempF}F`:' - ';
+  const tempCls = getTempClass(tempF);
+  const barClass={safe:'bar-safe',caution:'bar-caution',danger:'bar-danger',loading:'bar-loading'}[safety.color];
+  const icon={safe:'[fish]',caution:'!',danger:'[x]',unknown:'[?]'}[safety.level]||'[?]';
+  const stripClass={safe:'safe',caution:'caution',danger:'danger',unknown:'unknown'}[safety.level]||'unknown';
+  const sparkline = buildSparkline(history||[],gauge.safeThreshold,cfs,safety.color);
+  const rain = buildRainChart(rainHours||[]);
+
+  const clickHandler = editMode ? '' : `onclick="openModal('${gauge.id}')"`;  
+  return `<div class="river-card" ${clickHandler}>
+    <div class="card-status-bar ${barClass}"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div><div class="river-name">${gauge.name}</div><div class="river-location">${gauge.location}</div></div>
+        <div>
+          <div class="safety-badge badge-${safety.color}">${safety.label}</div>
+          ${safety.cause ? `<div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--ink-light);text-align:right;margin-top:4px;letter-spacing:0.3px;">^ ${safety.cause}</div>` : ''}
+        </div>
+      </div>
+      <div class="metrics-row">
+        <div class="metric-box">
+          <div class="metric-label">Flow</div>
+          <div class="metric-value">${cfsStr}<span class="trend-arrow ${trend.cls}">${trend.arrow}</span></div>
+          <div class="metric-unit">cfs</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Height</div>
+          <div class="metric-value">${htStr}</div>
+          <div class="metric-unit">feet</div>
+        </div>
+        <div class="metric-box">
+          <div class="metric-label">Water Temp</div>
+          <div class="metric-value ${tempCls}">${tempStr}</div>
+          <div class="metric-unit">fahrenheit</div>
+        </div>
+      </div>
+      ${sparkline}
+      ${rain}
+      <button class="hatch-btn" onclick="openHatchDrawer('${gauge.id}',event)">
+        Hatches &amp; Fly Recommendations
+        <span class="hatch-btn-count" id="hcount-${gauge.id}">...</span>
+      </button>
+      <div class="wading-strip ${stripClass}">
+        <span class="wading-icon">${icon}</span>
+        <span>${getWadingAdvice(safety, cfs, height)}</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function openModal(siteId) {
+  const gauge = STREAM_LIBRARY.find(g=>g.id===siteId);
+  if (!gauge) return;
+  const data = gaugeData[siteId]||{cfs:null,height:null,tempF:null,prevCfs:null,history:[],rainHours:[]};
+  const safety = getSafety(data.cfs,data.height);
+  const trend = getTrend(data.cfs,data.prevCfs);
+  const cfsStr = data.cfs!==null?data.cfs.toFixed(1):' - ';
+  const htStr = data.height!==null?data.height.toFixed(2):'--';
+  const tempStr = data.tempF!==null?`${data.tempF}F`:' - ';
+  const tempCls = getTempClass(data.tempF);
+  const safetyClass = safety.level==='unknown'?'unknown':safety.level;
+  const fmt = t=>t?new Date(t).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'';
+
+  document.getElementById('modalBody').innerHTML = `
+    <div class="modal-river-name">${gauge.name}</div>
+    <div class="modal-location">${gauge.location} - USGS ${gauge.id}</div>
+    <div class="modal-metrics">
+      <div class="modal-metric">
+        <div class="metric-label">Flow Rate</div>
+        <div class="metric-value">${cfsStr}<span class="trend-arrow ${trend.cls}" style="font-size:14px">${trend.arrow}</span></div>
+        <div class="metric-unit">cu ft / sec</div>
+        ${data.cfsTime?`<div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--ink-light);margin-top:5px">${fmt(data.cfsTime)}</div>`:''}
+      </div>
+      <div class="modal-metric">
+        <div class="metric-label">Gauge Height</div>
+        <div class="metric-value">${htStr}</div>
+        <div class="metric-unit">feet</div>
+        ${data.heightTime?`<div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--ink-light);margin-top:5px">${fmt(data.heightTime)}</div>`:''}
+      </div>
+      <div class="modal-metric">
+        <div class="metric-label">Water Temp</div>
+        <div class="metric-value ${tempCls}">${tempStr}</div>
+        <div class="metric-unit">fahrenheit</div>
+      </div>
+    </div>
+    <div class="modal-safety ${safetyClass}">
+      <div class="modal-safety-title">${safety.label}</div>
+      <div class="modal-safety-text">${getWadingAdvice(safety, data.cfs, data.height)}</div>
+    </div>
+    <div class="modal-notes"><div class="notes-label">Fishing Notes</div><div class="notes-text">${gauge.notes}</div></div>
+    <a href="https://waterdata.usgs.gov/monitoring-location/${gauge.id}/" target="_blank" class="usgs-link">
+      <span>View USGS hydrograph -></span><span style="color:var(--ink-light);font-size:9px">waterdata.usgs.gov</span>
+    </a>`;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal(e) {
+  if (e.target===document.getElementById('modalOverlay')) document.getElementById('modalOverlay').classList.remove('open');
+}
+
+
+// ── Edit mode ─────────────────────────────────────────────────────────────────
+function toggleEditMode() {
+  editMode = !editMode;
+  const btn = document.getElementById('editBtn');
+  if (editMode) {
+    btn.classList.add('active');
+    btn.textContent = 'Done';
+    openDrawer();
+  } else {
+    btn.classList.remove('active');
+    btn.textContent = '+ Rivers';
+    closeDrawerDirect();
+  }
+}
+
+function removeRiver(id, e) {
+  if (e && e.stopPropagation) e.stopPropagation();
+  activeIds = activeIds.filter(i => i !== id);
+  saveActiveIds();
+  renderAll();
+  renderDrawerList();
+}
+
+// ── Add rivers drawer ─────────────────────────────────────────────────────────
+function openDrawer() {
+  document.getElementById('drawerOverlay').classList.add('open');
+  renderDrawerList();
+}
+function closeDrawer(e) {
+  if (e.target === document.getElementById('drawerOverlay')) {
+    // Tapping outside the drawer exits edit mode entirely
+    if (editMode) toggleEditMode();
+    else closeDrawerDirect();
+  }
+}
+function closeDrawerDirect() {
+  document.getElementById('drawerOverlay').classList.remove('open');
+}
+function setDrawerState(state, btn) {
+  drawerState = state;
+  document.querySelectorAll('.drawer-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  renderDrawerList();
+}
+function filterDrawer() { renderDrawerList(); }
+
+function renderDrawerList() {
+  const query = document.getElementById('drawerSearch').value.toLowerCase().trim();
+  const streams = STREAM_LIBRARY.filter(g => {
+    if (g.state !== drawerState) return false;
+    if (query && !g.name.toLowerCase().includes(query) && !g.location.toLowerCase().includes(query)) return false;
+    return true;
+  });
+  const list = document.getElementById('drawerList');
+  if (!streams.length) { list.innerHTML = '<div class="drawer-empty">No streams found</div>'; return; }
+
+  // Split into active (shown first) and available
+  const active = streams.filter(g => activeIds.includes(g.id));
+  const available = streams.filter(g => !activeIds.includes(g.id));
+
+  let html = '';
+
+  if (active.length) {
+    html += `<div class="drawer-section-label">On Your Dashboard</div>`;
+    html += active.map(g => `
+      <div class="drawer-item drawer-item-active">
+        <div>
+          <div class="drawer-item-name">${g.name}</div>
+          <div class="drawer-item-loc">${g.location}</div>
+        </div>
+        <button class="drawer-add-btn btn-remove" onclick="removeRiver('${g.id}', new Event('click'))">
+          - Remove
+        </button>
+      </div>`).join('');
+  }
+
+  if (available.length) {
+    html += `<div class="drawer-section-label" style="margin-top:${active.length?'14px':'0'}">Available to Add</div>`;
+    html += available.map(g => `
+      <div class="drawer-item">
+        <div>
+          <div class="drawer-item-name">${g.name}</div>
+          <div class="drawer-item-loc">${g.location}</div>
+        </div>
+        <button class="drawer-add-btn btn-add" onclick="addRiver('${g.id}')">
+          + Add
+        </button>
+      </div>`).join('');
+  }
+
+  list.innerHTML = html;
+}
+
+function addRiver(id) {
+  if (activeIds.includes(id)) return;
+  activeIds.push(id);
+  saveActiveIds();
+  renderAll();
+  renderDrawerList();
+  const gauge = STREAM_LIBRARY.find(g => g.id === id);
+  if (gauge) fetchGaugeData(gauge).then(data => { gaugeData[id] = data; renderAll(); });
+}
+
+
+function openHatchDrawer(siteId, e) { if(e) e.stopPropagation(); alert('Hatch data coming soon!'); }
+function buildHatchCard(h, type) { return ''; }
+function closeHatchDrawer(e) {}
+function updateHatchCounts() {}
+
+function dbg(msg) {
+  const p = document.getElementById('debugPanel');
+  if (p) { p.style.display='block'; p.textContent += msg + '\n'; }
+  console.log('[Current] ' + msg);
+}
+
+async function loadAllGauges() {
+  const icon = document.getElementById('refreshIcon');
+  icon.classList.add('spin');
+  document.getElementById('updateText').textContent = 'Loading...';
+  document.getElementById('statusDot').style.background = '#f0a820';
+
+  dbg('STREAM_LIBRARY: ' + (typeof STREAM_LIBRARY !== 'undefined' ? STREAM_LIBRARY.length + ' entries' : 'UNDEFINED'));
+  dbg('DEFAULT_IDS: ' + (typeof DEFAULT_IDS !== 'undefined' ? DEFAULT_IDS.length + ' ids' : 'UNDEFINED'));
+
+  // Get active gauges — with safety net
+  let active = getActiveGauges();
+  dbg('activeIds: ' + JSON.stringify(activeIds));
+  dbg('getActiveGauges: ' + active.length + ' gauges');
+
+  if (active.length === 0) {
+    dbg('RESET to defaults');
+    activeIds = [...DEFAULT_IDS];
+    saveActiveIds();
+    active = getActiveGauges();
+    dbg('After reset: ' + active.length + ' gauges');
+  }
+
+  // Show skeletons while loading
+  const paG = active.filter(g => g.state === 'PA');
+  const nyG = active.filter(g => g.state === 'NY');
+  dbg('PA: ' + paG.length + ', NY: ' + nyG.length);
+  document.getElementById('paList').innerHTML = paG.map(renderSkeleton).join('');
+  document.getElementById('nyList').innerHTML = nyG.map(renderSkeleton).join('');
+  document.getElementById('paCount').textContent = paG.length + ' gauges';
+  document.getElementById('nyCount').textContent = nyG.length + ' gauges';
+
+  // Fetch all gauges — simple parallel fetch
+  try {
+    const results = await Promise.all(active.map(g => fetchGaugeData(g)));
+    active.forEach((g, i) => { gaugeData[g.id] = results[i]; });
+  } catch(e) {
+    // Even if some fail, gaugeData will have partial results — render what we have
+  }
+
+  // Render everything
+  const successCount = active.filter(g => gaugeData[g.id] && !gaugeData[g.id].error).length;
+  dbg('Fetch done. Success: ' + successCount + '/' + active.length);
+  renderAll();
+  updateHatchCounts();
+
+  // Retry any that failed after a pause
+  const failed = active.filter(g => gaugeData[g.id] && gaugeData[g.id].error);
+  if (failed.length > 0) {
+    await new Promise(r => setTimeout(r, 2500));
+    const retries = await Promise.all(failed.map(g => fetchGaugeData(g)));
+    failed.forEach((g, j) => { if (!retries[j].error) gaugeData[g.id] = retries[j]; });
+    renderAll();
+    updateHatchCounts();
+  }
+
+  const now = new Date();
+  document.getElementById('updateText').textContent = now.toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit'});
+  document.getElementById('statusDot').style.background = '#40c070';
+  icon.classList.remove('spin');
+}
+
+function renderAll() {
+  document.getElementById('paSection').style.display=currentFilter==='NY'?'none':'block';
+  document.getElementById('nySection').style.display=currentFilter==='PA'?'none':'block';
+  const active=getActiveGauges();
+  const pa=currentFilter==='NY'?[]:active.filter(g=>g.state==='PA');
+  const ny=currentFilter==='PA'?[]:active.filter(g=>g.state==='NY');
+  document.getElementById('paList').innerHTML=pa.map(g=>renderCard(g,gaugeData[g.id]||{cfs:null,height:null,tempF:null,prevCfs:null,history:[],rainHours:[]})).join('');
+  document.getElementById('nyList').innerHTML=ny.map(g=>renderCard(g,gaugeData[g.id]||{cfs:null,height:null,tempF:null,prevCfs:null,history:[],rainHours:[]})).join('');
+}
+
+function filterState(state,btn) {
+  currentFilter=state;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('toolbarLabel').textContent={ALL:'All Rivers',PA:'Pennsylvania',NY:'New York'}[state];
+  renderAll();
+}
+
+function switchView(view) {
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(view==='river'?'riverView':'aboutView').classList.add('active');
+  document.getElementById(view==='river'?'navRivers':'navAbout').classList.add('active');
+}
+
+loadAllGauges();
+setInterval(loadAllGauges, 15*60*1000);
+</script>
+</body>
+</html>
