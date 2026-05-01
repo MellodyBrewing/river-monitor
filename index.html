@@ -258,7 +258,8 @@
     </div>
   </header>
 
-  <div id="riverView" class="view active">
+  <div id="debugPanel" style="display:none;background:#1a1a18;color:#40c070;font-family:monospace;font-size:11px;padding:10px 16px;margin:8px 12px;border-radius:8px;white-space:pre-wrap;line-height:1.6;"></div>
+<div id="riverView" class="view active">
     <div class="legend-bar">
       <div class="legend-item li-safe"><div class="legend-dot" style="background:var(--safe)"></div>Safe</div>
       <div class="legend-item li-caution"><div class="legend-dot" style="background:#f0a820"></div>Caution</div>
@@ -1141,23 +1142,38 @@ function updateHatchCounts() {
   });
 }
 
+function dbg(msg) {
+  const p = document.getElementById('debugPanel');
+  if (p) { p.style.display='block'; p.textContent += msg + '\n'; }
+  console.log('[Current] ' + msg);
+}
+
 async function loadAllGauges() {
   const icon = document.getElementById('refreshIcon');
   icon.classList.add('spin');
   document.getElementById('updateText').textContent = 'Loading...';
   document.getElementById('statusDot').style.background = '#f0a820';
 
+  dbg('STREAM_LIBRARY: ' + (typeof STREAM_LIBRARY !== 'undefined' ? STREAM_LIBRARY.length + ' entries' : 'UNDEFINED'));
+  dbg('DEFAULT_IDS: ' + (typeof DEFAULT_IDS !== 'undefined' ? DEFAULT_IDS.length + ' ids' : 'UNDEFINED'));
+
   // Get active gauges — with safety net
   let active = getActiveGauges();
+  dbg('activeIds: ' + JSON.stringify(activeIds));
+  dbg('getActiveGauges: ' + active.length + ' gauges');
+
   if (active.length === 0) {
+    dbg('RESET to defaults');
     activeIds = [...DEFAULT_IDS];
     saveActiveIds();
     active = getActiveGauges();
+    dbg('After reset: ' + active.length + ' gauges');
   }
 
   // Show skeletons while loading
   const paG = active.filter(g => g.state === 'PA');
   const nyG = active.filter(g => g.state === 'NY');
+  dbg('PA: ' + paG.length + ', NY: ' + nyG.length);
   document.getElementById('paList').innerHTML = paG.map(renderSkeleton).join('');
   document.getElementById('nyList').innerHTML = nyG.map(renderSkeleton).join('');
   document.getElementById('paCount').textContent = paG.length + ' gauges';
@@ -1172,6 +1188,8 @@ async function loadAllGauges() {
   }
 
   // Render everything
+  const successCount = active.filter(g => gaugeData[g.id] && !gaugeData[g.id].error).length;
+  dbg('Fetch done. Success: ' + successCount + '/' + active.length);
   renderAll();
   updateHatchCounts();
 
