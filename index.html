@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Current · River Monitor v3</title>
+<title>Current · River Monitor v6.1</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -242,7 +242,7 @@
       <div class="logo-group">
         <div class="logo-mark">〜</div>
         <div>
-          <div class="app-name">Current <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:400;color:#5870a0;letter-spacing:0.5px;vertical-align:middle;">v6</span></div>
+          <div class="app-name">Current <span style="font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:400;color:#5870a0;letter-spacing:0.5px;vertical-align:middle;">v6.1</span></div>
           <div class="app-sub">PA &amp; NY River Monitor</div>
         </div>
       </div>
@@ -1144,43 +1144,50 @@ function updateHatchCounts() {
 async function loadAllGauges() {
   const icon = document.getElementById('refreshIcon');
   icon.classList.add('spin');
-  document.getElementById('updateText').textContent='Loading...';
-  document.getElementById('statusDot').style.background='#f0a820';
-  let active=getActiveGauges();
-  // Safety net: if no active gauges found, reset to defaults
+  document.getElementById('updateText').textContent = 'Loading...';
+  document.getElementById('statusDot').style.background = '#f0a820';
+
+  // Get active gauges — with safety net
+  let active = getActiveGauges();
   if (active.length === 0) {
     activeIds = [...DEFAULT_IDS];
     saveActiveIds();
     active = getActiveGauges();
   }
-  const paG=active.filter(g=>g.state==='PA'), nyG=active.filter(g=>g.state==='NY');
-  document.getElementById('paList').innerHTML=paG.map(renderSkeleton).join('');
-  document.getElementById('nyList').innerHTML=nyG.map(renderSkeleton).join('');
-  document.getElementById('paCount').textContent=`${paG.length} gauges`;
-  document.getElementById('nyCount').textContent=`${nyG.length} gauges`;
-  // Fetch in batches of 4 to avoid overwhelming the CORS proxy
-  const BATCH_SIZE = 4;
-  for (let i = 0; i < active.length; i += BATCH_SIZE) {
-    const batch = active.slice(i, i + BATCH_SIZE);
-    const batchNum = Math.floor(i/BATCH_SIZE)+1;
-    const totalBatches = Math.ceil(active.length/BATCH_SIZE);
-    document.getElementById('updateText').textContent=`Loading ${batchNum}/${totalBatches}...`;
-    const batchResults = await Promise.all(batch.map(g => fetchGaugeData(g)));
-    batch.forEach((g, j) => { gaugeData[g.id] = batchResults[j]; });
-    renderAll();
-    if (i + BATCH_SIZE < active.length) await new Promise(r => setTimeout(r, 500));
+
+  // Show skeletons while loading
+  const paG = active.filter(g => g.state === 'PA');
+  const nyG = active.filter(g => g.state === 'NY');
+  document.getElementById('paList').innerHTML = paG.map(renderSkeleton).join('');
+  document.getElementById('nyList').innerHTML = nyG.map(renderSkeleton).join('');
+  document.getElementById('paCount').textContent = paG.length + ' gauges';
+  document.getElementById('nyCount').textContent = nyG.length + ' gauges';
+
+  // Fetch all gauges — simple parallel fetch
+  try {
+    const results = await Promise.all(active.map(g => fetchGaugeData(g)));
+    active.forEach((g, i) => { gaugeData[g.id] = results[i]; });
+  } catch(e) {
+    // Even if some fail, gaugeData will have partial results — render what we have
   }
-  // Retry any failed gauges once after a short delay
+
+  // Render everything
+  renderAll();
+  updateHatchCounts();
+
+  // Retry any that failed after a pause
   const failed = active.filter(g => gaugeData[g.id] && gaugeData[g.id].error);
   if (failed.length > 0) {
-    await new Promise(r => setTimeout(r, 2000));
+    await new Promise(r => setTimeout(r, 2500));
     const retries = await Promise.all(failed.map(g => fetchGaugeData(g)));
-    failed.forEach((g, i) => { if (!retries[i].error) gaugeData[g.id] = retries[i]; });
+    failed.forEach((g, j) => { if (!retries[j].error) gaugeData[g.id] = retries[j]; });
     renderAll();
+    updateHatchCounts();
   }
-  const now=new Date();
-  document.getElementById('updateText').textContent=now.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
-  document.getElementById('statusDot').style.background='#40c070';
+
+  const now = new Date();
+  document.getElementById('updateText').textContent = now.toLocaleTimeString('en-US', {hour:'numeric', minute:'2-digit'});
+  document.getElementById('statusDot').style.background = '#40c070';
   icon.classList.remove('spin');
 }
 
