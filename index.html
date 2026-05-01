@@ -558,7 +558,15 @@ const DEFAULT_IDS = [
 ];
 
 function loadActiveIds() {
-  try { const s = localStorage.getItem('currentActiveGauges'); if (s) return JSON.parse(s); } catch(e) {}
+  try {
+    const s = localStorage.getItem('currentActiveGauges');
+    if (s) {
+      const parsed = JSON.parse(s);
+      // Validate — only keep IDs that exist in current STREAM_LIBRARY
+      const valid = parsed.filter(id => STREAM_LIBRARY.find(g => g.id === id));
+      if (valid.length > 0) return valid;
+    }
+  } catch(e) {}
   return [...DEFAULT_IDS];
 }
 function saveActiveIds() {
@@ -566,6 +574,8 @@ function saveActiveIds() {
 }
 
 let activeIds = loadActiveIds();
+// Safety net: if somehow activeIds is empty, reset to defaults
+if (!activeIds || activeIds.length === 0) activeIds = [...DEFAULT_IDS];
 let gaugeData = {};
 let currentFilter = 'ALL';
 let editMode = false;
@@ -1131,7 +1141,13 @@ async function loadAllGauges() {
   icon.classList.add('spin');
   document.getElementById('updateText').textContent='Loading...';
   document.getElementById('statusDot').style.background='#f0a820';
-  const active=getActiveGauges();
+  let active=getActiveGauges();
+  // Safety net: if no active gauges found, reset to defaults
+  if (active.length === 0) {
+    activeIds = [...DEFAULT_IDS];
+    saveActiveIds();
+    active = getActiveGauges();
+  }
   const paG=active.filter(g=>g.state==='PA'), nyG=active.filter(g=>g.state==='NY');
   document.getElementById('paList').innerHTML=paG.map(renderSkeleton).join('');
   document.getElementById('nyList').innerHTML=nyG.map(renderSkeleton).join('');
